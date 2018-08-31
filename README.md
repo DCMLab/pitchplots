@@ -10,6 +10,6 @@ Plotting library for note distributions in different representations of tonal sp
 - Circle of fifths
 - Circle of chromatics
 - Tonnetz
-# Coming soon
+### Coming soon
 - Line of fifths
 - Torus
