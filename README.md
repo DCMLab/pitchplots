@@ -22,5 +22,5 @@ Plotting library for note distributions in different representations of tonal sp
 - try the different settings and don't hesitate to send your comments to: timothy.loayza@epfl.ch
 
 ## Versions
-- it's currently the version 1.0.0, uploaded the 31.08.2018
+- it's currently the version 1.0.0 uploaded the 31.08.2018
 - it will be augmented and improved weekly
