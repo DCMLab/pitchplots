@@ -4,11 +4,12 @@ Plotting library for note distributions in different representations of tonal sp
 ## Dependencies
 - Pandas
 - Matplotlib
-- (Numpy?)
+- Numpy
 
 ## Tonal Space Representations
-- Line of fifths
 - Circle of fifths
+- Circle of chromatics
 - Tonnetz
+# Coming soon
+- Line of fifths
 - Torus
-- ...?
