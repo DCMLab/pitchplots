@@ -13,3 +13,5 @@ Plotting library for note distributions in different representations of tonal sp
 ### Coming soon
 - Line of fifths
 - Torus
+
+## Quick Manual
