@@ -13,6 +13,7 @@ Plotting library for note distributions in different representations of tonal sp
 ### Coming soon
 - Line of fifths
 - Torus
+- Animations of the different plots
 
 ## Quick manual
 - you will need the following library installed: Pandas, Matplotlib, Numpy and of course the standard python libraries
