@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib
 import math
-from pitchplots1.musical_read_file import musical_get_data_reduced
-from pitchplots1.musical_functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note
+from pitchplots.musical_read_file import musical_get_data_reduced
+from pitchplots.musical_functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note
 
 def pie_chart(
     location,

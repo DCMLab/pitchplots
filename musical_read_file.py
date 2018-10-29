@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from pitchplots1.musical_functions import check_tpc, check_pc, check_duration, get_acc, get_step, get_pc
+from pitchplots.musical_functions import check_tpc, check_pc, check_duration, get_acc, get_step, get_pc
 
 def musical_read_file(location, minNote = 50):
     """Read a given file and put in a DataFrame the number of the column correspondant to the dataType

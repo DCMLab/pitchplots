@@ -1,23 +1,31 @@
-# pitchplots
-Plotting library for note distributions in different representations of tonal space in Python.
+name of the package
+version
+author
+author email
+github url
+dependancies
 
-## Dependencies
-- Pandas
-- Matplotlib
-- Numpy
+description
 
-## Tonal Space Representations
-- Circle of fifths
-- Circle of chromatics
-- Tonnetz
 
-### Coming soon
-- Torus
-- Animations of the different plots
+1.  List item one.
 
-## Quick manual
-- you will need the following library installed: Pandas, Matplotlib, Numpy and of course the standard python libraries
+    List item one continued with a second paragraph followed by an
+    Indented block.
 
-## Versions
-- it's currently the version 
-- it will be augmented and improved
+        $ ls *.sh
+        $ mv *.sh ~/tmp
+
+    List item continued with a third paragraph.
+
+2.  List item two continued with an open block.
+
+    This paragraph is part of the preceding list item.
+
+    1. This list is nested and does not require explicit item continuation.
+
+       This paragraph is part of the preceding list item.
+
+    2. List item b.
+
+    This paragraph belongs to item two of the outer list.
