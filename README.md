@@ -36,7 +36,7 @@ you can test the library with test_pitchplots.py and data_pitchplots.csv
 
 ## Authors
 
-* **Timothy Loayza** **Fabian Moss** - *Initial work* - [pitchplots](https://github.com/DCMLab/pitchplots)
+* **Timothy Loayza**, **Fabian Moss** - *Initial work* - [pitchplots](https://github.com/DCMLab/pitchplots)
 
 ## License
 
