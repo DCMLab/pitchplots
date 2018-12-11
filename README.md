@@ -2,7 +2,11 @@
 
 Module that can parse files from MuseScore to .csv files
 
-### Prerequisites
+## Changes
+
+All the changes relatively to the past version are commented and with "000" at the end of the comments
+
+## Prerequisites
 
 What things you need to install the software
 
