@@ -21,13 +21,16 @@ def musicxml2df(filepath):
     #/.
     key_signature_on = False
     time_signature_on = False
+    qpm_on = False
     #./
     
     #adding of the time_signature after the filename column000
     columns = ['filepath', # piece ID or something (TODO)
                'composer',
                'filename',
-               'time_signature', #add time_signature000
+               'qpm', #add qpm000
+               'time_sign_num', #add time_signature000
+               'time_sign_den', #000
                'measure_no', # number of measure
                'no_accs', # number of accidentals
                'mode', # mode of key as defined in XML (not reliable)
@@ -73,10 +76,20 @@ def musicxml2df(filepath):
             #/.
             if pd.isnull(measure.time_signature) == False:
                 time_signature_on = True
-                time_signature = str(measure.time_signature.numerator) + \
-                    '/' + str(measure.time_signature.denominator)
+                time_sign_num = measure.time_signature.numerator
+                time_sign_den = measure.time_signature.denominator
             elif time_signature_on == False:
-                time_signature = np.nan
+                time_sign_num = np.nan
+                time_sign_den = np.nan
+            #./
+            
+            #adding of qpm000
+            #/.
+            if pd.isnull(measure.state.qpm) == False:
+                qpm_on = True
+                qpm = measure.state.qpm
+            elif qpm_on == False:
+                qpm = np.nan
             #./
 
             for note in measure.notes:
@@ -116,7 +129,9 @@ def musicxml2df(filepath):
                 values = [filepath,
                           composer,
                           filename,
-                          time_signature,
+                          qpm,
+                          time_sign_num,
+                          time_sign_den,
                           measure_no,
                           root,
                           mode,
