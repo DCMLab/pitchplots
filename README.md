@@ -1,6 +1,6 @@
 # pitchplots
 
-library plotting charts for different tonal representation
+library plotting charts for different tonal representations
 
 ## Getting Started
 
