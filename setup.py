@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pitchplots",
-    version="0.0.1",
+    version="0.0.10",
     author="Fabian Moss",
     author_email="fabian.moss@epfl.ch",
     description="A package containing representation tools for musical purposes",
