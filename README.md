@@ -37,8 +37,8 @@ you can first try to parse xml files to csv or DataFrame with:
 ```
 import pitchplots.parser as ppp
 
-ppp.xml_to_csv('example.mxl')
-df_example = ppp.xml_to_csv('example', save_csv=False)
+ppp.xml_to_csv('data_example.mxl')
+df_data_example = ppp.xml_to_csv('data_example.mxl', save_csv=False)
 ```
 
 then you can try the static module by passing csv files or Dataframe:
@@ -46,13 +46,13 @@ then you can try the static module by passing csv files or Dataframe:
 ```
 import pitchplots.static as pps
 
-pps.hexagonal_chart('example.csv')
+pps.hexagonal_chart('data_example.csv')
 ```
 or
 ```
 import pitchplots.static as pps
 
-pps.hexagonal_chart(df_example)
+pps.hexagonal_chart(df_data_example)
 ```
 
 then to see all the possibilities you can look at the [LICENSE.md](LICENSE.md) for hexagonal_chart information and the [LICENSE.md](LICENSE.md) for pie_chart information.
