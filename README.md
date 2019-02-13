@@ -32,7 +32,7 @@ pip install pitchplots
 
 ## Running the tests
 
-you can first try to parse xml files to csv or DataFrame with:
+you can first try to parse xml files to csv or DataFrame using our test files [data_example.mxl](data_example.mxl) with:
 
 ```
 import pitchplots.parser as ppp
@@ -55,7 +55,7 @@ import pitchplots.static as pps
 pps.hexagonal_chart(df_data_example)
 ```
 
-then to see all the possibilities you can look at the [LICENSE.md](LICENSE.md) for hexagonal_chart information and the [LICENSE.md](LICENSE.md) for pie_chart information.
+then to see all the possibilities you can look at the [documentation_hexagonal_chart.ipynb](documentation_hexagonal_chart.ipynb) for hexagonal_chart information and the [documentation_pie_chart.ipynb](documentation_pie_chart.ipynb) for pie_chart information.
 
 ## Authors
 
