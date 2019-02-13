@@ -11,10 +11,10 @@ The program consist in the following files: musical_function.py, musical_read_fi
 What things you need to install the software and how to install them
 
 ```
-You will need python on your computer and the following libaries: matplotlib, pandas and numpy
+You will need python on your computer and the following libaries: matplotlib, pandas, numpy and magenta
 ```
 
-note that if you are using anaconda, these libraries are already installed
+note that if you are using anaconda, these libraries are already installed except magenta
 
 ### Installing
 
