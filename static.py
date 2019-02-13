@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib
 import math
-from pitchplots.musical_read_file import musical_get_data_reduced
-from pitchplots.musical_functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note
+from pitchplots.reader import get_df_short
+from pitchplots.functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note
 
 def pie_chart(
     location,
@@ -20,7 +20,7 @@ def pie_chart(
     topNote = 'nan',
     rotation = 0,
     clockwise = True,
-    colorGeneral='Blues',
+    cmap='Blues',
     colorZeroValue='nan'):
     """plot a piechart with importance of the notes that are represented ny the colour asa heatmap
 
@@ -39,15 +39,15 @@ def pie_chart(
     topNote -- tell whiche note should be on the top of the piechart, different for tpc or pc
     rotation -- allows to rotate the piechart, int angle in degres
     clockwise -- if True the piechart is displayed clockwise if not counter-clockwise
-    colorGeneral -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
+    cmap -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
     colorZeroValue -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
     """
     #settings
     convertTable = pd.Series(convertTable)
-    df = musical_get_data_reduced(location, convertTable=convertTable, dataType=dataType)
+    df = get_df_short(location, convertTable=convertTable, dataType=dataType)
 
     #color map
-    cmap = matplotlib.cm.get_cmap(colorGeneral)
+    cmap = matplotlib.cm.get_cmap(cmap)
     color_note = []
 
     #dataFrame for the plot if tpc
@@ -267,7 +267,7 @@ def pie_chart(
             ax2 = fig.add_subplot(1, 10, 1)
             cb1 = matplotlib.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm, orientation='vertical')
         
-    plt.show()
+    return fig
 
 #=====================================================================================================
 #hex
@@ -285,7 +285,7 @@ def hexagonal_chart(
     hexSize = 1,
     textSize = 1,
     figSize = 9,
-    colorGeneral = 'Blues',
+    cmap = 'Blues',
     colorZeroValue = 'nan',
     centerNote = 'nan'):
     """Plot a 2D grid of hexagons, each hexagons being a note
@@ -305,7 +305,7 @@ def hexagonal_chart(
     hexSize -- indicate the size of the hexagons (default 1)
     textSize -- indicate the size of the typo for the labels (default 1)
     figSize -- indicate the size of the produced figure in inches (default 9)
-    colorGeneral -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
+    cmap -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
     colorZeroValue -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
     centerNote -- you can set the note that will be in the center of the grid,
         by default it put the most recurent note in the center (default 'nan')
@@ -316,7 +316,7 @@ def hexagonal_chart(
 
     #settings
     convertTable = pd.Series(convertTable)
-    df_data = musical_get_data_reduced(location, convertTable=convertTable, dataType=dataType)
+    df_data = get_df_short(location, convertTable=convertTable, dataType=dataType)
     
     #constant
     HEXEDGE = math.sqrt(3)/2 #math constant
@@ -353,7 +353,7 @@ def hexagonal_chart(
     
     
     #colormap for the layout
-    cmap = matplotlib.cm.get_cmap(colorGeneral)
+    cmap = matplotlib.cm.get_cmap(cmap)
 
     #is the list of hexagon already define
     if pitchClassDisplay:
@@ -396,8 +396,8 @@ def hexagonal_chart(
             ax.text(
                 center[0],
                 center[1],
-                df_data['tpc'][0].replace('#', r'$\sharp$') \
-                                .replace('b', r'$\flat$'),
+                put_flat_sharp(df_data['tpc'][0], df_data['sup'][0]).replace('#', r'$\sharp$') \
+                              .replace('b', r'$\flat$'),
                 color='white',
                 horizontalalignment='center',
                 verticalalignment='center',
@@ -625,4 +625,4 @@ def hexagonal_chart(
     #display off the axis
     ax.axis('off')
     
-    plt.show()
+    return fig
