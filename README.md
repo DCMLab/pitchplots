@@ -37,8 +37,7 @@ you can first try to parse xml files to csv or DataFrame using our test files [d
 ```
 import pitchplots.parser as ppp
 
-ppp.xml_to_csv('data_example.mxl')
-df_data_example = ppp.xml_to_csv('data_example.mxl', save_csv=False)
+df_data_example = ppp.xml_to_csv('data_example.mxl', save_csv=True)
 ```
 
 then you can try the static module by passing csv files or Dataframe:
