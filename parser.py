@@ -186,5 +186,3 @@ def xml_to_csv_reduce(filepath):
                 row = dict(zip(columns, values))
                 df = df.append(row, ignore_index=True)
     return df
-
-xml_to_csv('debussy.mxl')
