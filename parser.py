@@ -1,17 +1,24 @@
 """
 Parse .xml or .mxl files and return a pandas DataFrameself.
 """
+import sys
+import os
 
 import numpy as np
 import pandas as pd
-import os.path as op
 
 # import xml parser from magenta
 from magenta.music import musicxml_parser
 
 ### DEFINE PARSER
-def xml_to_csv(filepath, save_csv=True):
-
+def xml_to_csv(filepath, filename=None, save_csv=True):
+    """return the Dataframe, and possbily register it in csv, of the musicxml file
+    
+    Keyword arguments:
+    filepath -- absolute path to the xml file
+    filename -- give the name of the .csv file
+    save_cvs -- if True save the csv file in 
+    """
     columns = ['filepath', # piece ID or something (TODO)
                'qpm', #add qpm, the beat per minute
                'time_sign_num', #add the time signature numerator
@@ -31,8 +38,6 @@ def xml_to_csv(filepath, save_csv=True):
                'duration', # note duration in beats as float (i.e. a quarter note is 0.25) ???? IS THIS CORRECT?
                'onset' # onset in seconds
               ]
-    
-    filename = op.basename(filepath).split('.')[0] + '.csv'
     
     #add of these variables for control
     key_signature_on = False
@@ -130,12 +135,23 @@ def xml_to_csv(filepath, save_csv=True):
                 row = dict(zip(columns, values))
                 df = df.append(row, ignore_index=True)
     
-    if save_csv:            
-        df.to_csv(filename, sep=',')
+    if save_csv:
+        csv_path = os.path.dirname(sys.argv[0])+r'/csv' #  path to the csv directory
+        if pd.isnull(filename): # get the name from the xml file and put in csv dir
+            if not os.path.exists(csv_path):
+                os.makedirs(csv_path)
+            filename = os.path.basename(filepath).split('.')[0] + '.csv'
+            df.to_csv(os.path.join(csv_path,filename), sep=',')
+        elif "\\" in filename or "/" in filename: # put it in the given absolute path
+            df.to_csv(filename, sep=',')
+        else: # get the name and put it in csv dir
+            if not os.path.exists(csv_path):
+                os.makedirs(csv_path)
+            df.to_csv(os.path.join(csv_path,filename), sep=',')
 
     return df
 
-# a reduced version of the parser for time optimization
+# a reduced version of the parser for time os.pathtimization
 def xml_to_csv_reduce(filepath):
 
     columns = ['measure_no', # number of measure
@@ -170,3 +186,5 @@ def xml_to_csv_reduce(filepath):
                 row = dict(zip(columns, values))
                 df = df.append(row, ignore_index=True)
     return df
+
+xml_to_csv('debussy.mxl')
