@@ -17,7 +17,7 @@ def xml_to_csv(filepath, filename=None, save_csv=True):
     Keyword arguments:
     filepath -- absolute path to the xml file
     filename -- give the name of the .csv file
-    save_cvs -- if True save the csv file in 
+    save_cvs -- if True save the csv file in the csv directory or at the given path
     """
     columns = ['filepath', # piece ID or something (TODO)
                'qpm', #add qpm, the beat per minute

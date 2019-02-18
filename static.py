@@ -9,42 +9,42 @@ from pitchplots.functions import get_acc, get_step, get_pc, get_dic_nei, put_fla
 
 def pie_chart(
     location,
-    dataType='tpc',
+    data_type='tpc',
     log=False,
-    convertTable=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
-    pitchClassDisplay=False,
+    convert_table=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
+    pitch_class_display=False,
     colorbar=True,
     duration=False,
     fifth=True,
-    figSize = 9,
-    topNote = 'nan',
-    rotation = 0,
-    clockwise = True,
+    figure_size=9,
+    top_note='nan',
+    rotation=0,
+    clockwise=True,
     cmap='Blues',
-    colorZeroValue='nan'):
-    """plot a piechart with importance of the notes that are represented ny the colour asa heatmap
+    color_zero_value='nan'):
+    """return the figure of a piechart with importance of the notes that are represented by the colour as a heatmap
 
     Keyword arguments:
     location -- the absolute path to the .csv file containing the data
-    dataType -- the type of data that contains the file (default 'tpc')
+    data_type -- the type of data that contains the file (default 'tpc'), 'pc' could be use for twelve parts chart tpc form
         (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
     log -- if True the colors are distributed on a log scale, by default it's a lineare scale (default False)
-    convertTable -- the conversion table from pitch class to tpc(F#, A, ...) format,
+    convert_table -- the conversion table from pitch class to tpc(F#, A, ...) format,
         the position indicate the pitch class value (default [C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B])
-    pitchClassDisplay -- if True display the pitch class and no the tpc values and so the grid repeat itself.
+    pitch_class_display -- if True display the pitch class and no the tpc values and so the grid repeat itself.
     colorbar -- if true display the colorbar aside of the pie chart
     duration -- tell him if he has to class the importance by the total duration of the note or by the number of appearence.
     fifth -- if True class the notes by fifth order, if not class by the chromatic order
-    figSize -- tell the size of the figure in inches
-    topNote -- tell whiche note should be on the top of the piechart, different for tpc or pc
+    figure_size -- tell the size of the figure in inches
+    top_note -- tell whiche note should be on the top of the piechart, different for tpc or pc
     rotation -- allows to rotate the piechart, int angle in degres
     clockwise -- if True the piechart is displayed clockwise if not counter-clockwise
     cmap -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
-    colorZeroValue -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
+    color_zero_value -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
     """
     #settings
-    convertTable = pd.Series(convertTable)
-    df = get_df_short(location, convertTable=convertTable, dataType=dataType)
+    convert_table = pd.Series(convert_table)
+    df = get_df_short(location, convert_table=convert_table, data_type=data_type)
 
     #color map
     cmap = matplotlib.cm.get_cmap(cmap)
@@ -60,8 +60,8 @@ def pie_chart(
     letter = 'nan'
     s_fifth = pd.Series()
 
-    figsize = [figSize*1.5, figSize] #define the size if the figure
-    fig = plt.figure(figsize=figsize)
+    figure_size = [figure_size*1.5, figure_size] #define the size if the figure
+    fig = plt.figure(figure_size=figure_size)
     ax = fig.add_subplot(111, aspect='equal')
 
     #Set the order in function of fifth
@@ -70,11 +70,11 @@ def pie_chart(
     else:
         s_tpc_format = pd.Series((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
 
-    #for plot if pitchClassDisplay
+    #for plot if pitch_class_display
     s_twelve_ones = pd.Series((1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), index=s_tpc_format)
 
     #if it show the tpc values
-    if pitchClassDisplay == False:
+    if pitch_class_display == False:
         #put the right values in 'number'
         if duration:
             df_data = df.copy()
@@ -125,13 +125,13 @@ def pie_chart(
 
                 #if the pitch class do no appear in the piece
                 else:
-                    letter = convertTable[s_tpc_format[i]]
+                    letter = convert_table[s_tpc_format[i]]
 
                     df_tpc_pie = df_tpc_pie.append({'note':letter, 'part':1}, ignore_index=True)
-                    if colorZeroValue == 'nan':
+                    if color_zero_value == 'nan':
                         color_note.append(cmap(0))
                     else:
-                        color_note.append(colorZeroValue)
+                        color_note.append(color_zero_value)
         else:
             #get the fifth numbers of the notes
             for i in range(df_data.shape[0]):
@@ -148,8 +148,8 @@ def pie_chart(
                 if df_data['fifth'].isin([i + df_data['fifth'].min()]).any():
                     #get the colour for the note who has the good fifth number
                     color_note.append(cmap(norm(df_data['number'][df_data['fifth']==(i + df_data['fifth'].min())].iat[0])))
-                elif df_data['fifth'].isin([i + df_data['fifth'].min()]).any() == False and colorZeroValue != 'nan':
-                    color_note.append(colorZeroValue)
+                elif df_data['fifth'].isin([i + df_data['fifth'].min()]).any() == False and color_zero_value != 'nan':
+                    color_note.append(color_zero_value)
                 else:
                     color_note.append(cmap(0))
 
@@ -159,13 +159,13 @@ def pie_chart(
             color_note = list(reversed(color_note))
 
         #calculate the angle for the topPitchClass to be at the top
-        if topNote != 'nan' and fifth == False and df_tpc_pie['note'].isin([topNote]).any() == True:
+        if top_note != 'nan' and fifth == False and df_tpc_pie['note'].isin([top_note]).any() == True:
             if clockwise:
                 rotation = rotation + 90 + df_tpc_pie.at[0, 'part'] * 15
             else:
                 rotation = rotation + 90 - df_tpc_pie.at[0, 'part'] * 15
             for i in range(df_tpc_pie.shape[0]):
-                if topNote == df_tpc_pie.at[i, 'note']:
+                if top_note == df_tpc_pie.at[i, 'note']:
                     if df_tpc_pie.at[i, 'part'] != 1:
                         if clockwise:
                             rotation = rotation - 15*df_tpc_pie.at[i, 'part']
@@ -179,13 +179,13 @@ def pie_chart(
                         rotation = rotation - 30*df_tpc_pie.at[i, 'part']
 
         #put the top note at the top
-        if topNote != 'nan' and fifth == True and df_tpc_pie['note'].isin([topNote]).any() == True:
+        if top_note != 'nan' and fifth == True and df_tpc_pie['note'].isin([top_note]).any() == True:
             if clockwise:
                 rotation = rotation + 90 + 180/df_tpc_pie.shape[0]
             else:
                 rotation = rotation  + 90 - 180/df_tpc_pie.shape[0]
             for i in range (df_tpc_pie.shape[0]):
-                if df_tpc_pie.at[i, 'note'] == topNote:
+                if df_tpc_pie.at[i, 'note'] == top_note:
                     break
                 else:
                     #the sens of reading depend on the orientation
@@ -243,10 +243,10 @@ def pie_chart(
             if df_data.iat[i, 0] != 0:
                 color_note.append(cmap(norm(df_data.iat[i, 0])))
             else:
-                if colorZeroValue == 'nan':
+                if color_zero_value == 'nan':
                     color_note.append(cmap(0))
                 else:
-                    color_note.append(colorZeroValue)
+                    color_note.append(color_zero_value)
 
         #if clockwise invert the order of the data to be displayed clockwise
         if clockwise:
@@ -254,9 +254,9 @@ def pie_chart(
             color_note = list(reversed(color_note))
 
         #calculate the angle for the topPitchClass to be at the top
-        if topNote != 'nan':
+        if top_note != 'nan':
             for i in range(s_tpc_format.shape[0]):
-                if topNote == (s_twelve_ones.index)[i]:
+                if top_note == (s_twelve_ones.index)[i]:
                     rotation = rotation + 75 - i * 30
                     break
 
@@ -274,40 +274,40 @@ def pie_chart(
 #=====================================================================================================
 def hexagonal_chart(
     location,
-    dataType='tpc',
-    pitchClassDisplay=False,
+    data_type='tpc',
+    pitch_class_display=False,
     duplicate=True,
     duration=False,
     log=False,
     colorbar=True,
-    convertTable=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
-    size = 3,
-    hexSize = 1,
-    textSize = 1,
-    figSize = 9,
-    cmap = 'Blues',
-    colorZeroValue = 'nan',
-    centerNote = 'nan'):
-    """Plot a 2D grid of hexagons, each hexagons being a note
+    convert_table=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
+    size=3,
+    hex_size=1,
+    text_size=1,
+    figure_size=9,
+    cmap='Blues',
+    color_zero_value='nan',
+    center_note='nan'):
+    """return the figure of a 2D grid of hexagons, each hexagons being a note
 
     Keyword arguments:
     location -- the absolute path to the .csv file containing the data
-    dataType -- the type of data that contains the file (default 'tpc')
+    data_type -- the type of data that contains the file (default 'tpc')
         (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
-    pitchClassDisplay -- if True display the pitch class and no the tpc values and so the grid repeat itself.
+    pitch_class_display -- if True display the pitch class and not the tpc values and so the grid repeat itself.
     duplicate -- it False avoid any repetition in the grid
     duration -- if True the values taking account is the duration and note the number of appearence
     log -- if True the colors are distributed on a log scale, by default it's a lineare scale (default False)
     colorbar -- if true display the colorbar in the background
-    convertTable -- the conversion table from pitch class to tpc(F#, A, ...) format,
+    convert_table -- the conversion table from pitch class to tpc(F#, A, ...) format,
         the position indicate the pitch class value (default [C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B])
     size -- define the number of layers of the hexagonal grid (default 3)
-    hexSize -- indicate the size of the hexagons (default 1)
-    textSize -- indicate the size of the typo for the labels (default 1)
-    figSize -- indicate the size of the produced figure in inches (default 9)
+    hex_size -- indicate the size of the hexagons (default 1)
+    text_size -- indicate the size of the typo for the labels (default 1)
+    figure_size -- indicate the size of the produced figure in inches (default 9)
     cmap -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
-    colorZeroValue -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
-    centerNote -- you can set the note that will be in the center of the grid,
+    color_zero_value -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
+    center_note -- you can set the note that will be in the center of the grid,
         by default it put the most recurent note in the center (default 'nan')
     """
     #===================================================================================
@@ -315,19 +315,19 @@ def hexagonal_chart(
     #===================================================================================
 
     #settings
-    convertTable = pd.Series(convertTable)
-    df_data = get_df_short(location, convertTable=convertTable, dataType=dataType)
+    convert_table = pd.Series(convert_table)
+    df_data = get_df_short(location, convert_table=convert_table, data_type=data_type)
     
     #constant
     HEXEDGE = math.sqrt(3)/2 #math constant
 
     #intern variables
-    length = 0.05 * hexSize#radius and border length of the hexagons
+    length = 0.05 * hex_size#radius and border length of the hexagons
     center = [0.5, 0.5] # set the center on the center of the map
-    size_text = length * 200 * textSize # parameter fontsize
+    size_text = length * 200 * text_size # parameter fontsize
     pos = [0, 0, 0] #x, y, z
     pos_ser = (0, 0, 0) #for serching in the data
-    a_centerNote = ['F', 0] # the centerNote that was define (note, sup)
+    a_center_note = ['F', 0] # the center_note that was define (note, sup)
     color_nb = 0
     color_text = 'Black' # by default
     show_hex = True
@@ -347,8 +347,8 @@ def hexagonal_chart(
     found = False
 
     #define figure
-    figsize = [figSize*1.5, figSize] #define the size if the figure
-    fig = plt.figure(figsize=figsize)
+    figure_size = [figure_size*1.5, figure_size] #define the size if the figure
+    fig = plt.figure(figure_size=figure_size)
     ax = fig.add_subplot(111, aspect='equal')
     
     
@@ -356,14 +356,14 @@ def hexagonal_chart(
     cmap = matplotlib.cm.get_cmap(cmap)
 
     #is the list of hexagon already define
-    if pitchClassDisplay:
+    if pitch_class_display:
         columns = ['pos', 'note']
     else:
         columns = ['pos', 'note', 'sup']
     df_pos = pd.DataFrame(columns=columns)
 
     #give the notes'neighbours
-    df_nei = pd.DataFrame.from_dict(get_dic_nei(pitchClassDisplay))
+    df_nei = pd.DataFrame.from_dict(get_dic_nei(pitch_class_display))
 
     #give the direction to look to for the nearest define hexagon
     x_list = [-1, 1, 0, 0, 1, -1]
@@ -376,11 +376,11 @@ def hexagonal_chart(
 
     #do the first hexagon of the center
     #if not define it takes the most current note
-    if(centerNote == 'nan'):
+    if(center_note == 'nan'):
         #draw the hexagon
         p = patches.RegularPolygon(center, 6, radius=length, color=cmap(1/1))
         
-        if pitchClassDisplay:
+        if pitch_class_display:
             ax.text(
                 center[0],
                 center[1],
@@ -408,15 +408,15 @@ def hexagonal_chart(
         ax.add_patch(p)
         
     else: #read the given note and display it
-        if pitchClassDisplay:
+        if pitch_class_display:
             df_pos = df_pos.append(
-                {'pos':(0,0,0), 'note':centerNote},
+                {'pos':(0,0,0), 'note':center_note},
                 ignore_index=True)
         else:
-            a_centerNote[0] = get_step(centerNote)
-            a_centerNote[1] = get_acc(centerNote)
+            a_center_note[0] = get_step(center_note)
+            a_center_note[1] = get_acc(center_note)
             df_pos = df_pos.append(
-                {'pos':(0,0,0), 'note':a_centerNote[0], 'sup':a_centerNote[1]},
+                {'pos':(0,0,0), 'note':a_center_note[0], 'sup':a_center_note[1]},
                 ignore_index=True)
         
         #set the color
@@ -424,8 +424,8 @@ def hexagonal_chart(
         found = False
         color_nb = 0
         for l in range(df_data.shape[0]):
-            if pitchClassDisplay:
-                if str(int(df_data.at[l, 'pc'])) == str(centerNote):
+            if pitch_class_display:
+                if str(int(df_data.at[l, 'pc'])) == str(center_note):
                     if duration:
                         color = cmap(norm(df_data.at[l, 'duration']))
                         color_nb = norm(df_data.at[l, 'duration'])
@@ -434,7 +434,7 @@ def hexagonal_chart(
                         color_nb = norm(df_data.at[l, 'nb'])
                     found = True
             else:
-                if df_data.at[l, 'tpc'] == a_centerNote[0] and df_data.at[l, 'sup'] == a_centerNote[1]:
+                if df_data.at[l, 'tpc'] == a_center_note[0] and df_data.at[l, 'sup'] == a_center_note[1]:
                     if duration:
                         color = cmap(norm(df_data.at[l, 'duration']))
                         color_nb = norm(df_data.at[l, 'duration'])
@@ -443,8 +443,8 @@ def hexagonal_chart(
                         color_nb = norm(df_data.at[l, 'nb'])
                     found = True
                     
-        if found == False and colorZeroValue != 'nan':
-            color = colorZeroValue
+        if found == False and color_zero_value != 'nan':
+            color = color_zero_value
 
         #define the color af the label in function of the color of the hexagon
         if color_nb > 0.6:
@@ -452,8 +452,8 @@ def hexagonal_chart(
         else:
             color_text = 'Black'
             
-        if pitchClassDisplay == False:
-            a_centerNote[0] = put_flat_sharp(a_centerNote[0], a_centerNote[1])
+        if pitch_class_display == False:
+            a_center_note[0] = put_flat_sharp(a_center_note[0], a_center_note[1])
 
         #draw and add labels
         p = patches.RegularPolygon(
@@ -462,11 +462,11 @@ def hexagonal_chart(
             radius=length,
             facecolor=color,
             edgecolor='Black')
-        if pitchClassDisplay:
+        if pitch_class_display:
             ax.text(
                 center[0],
                 center[1],
-                str(int(centerNote)),
+                str(int(center_note)),
                 color=color_text,
                 horizontalalignment='center',
                 verticalalignment='center',
@@ -475,7 +475,7 @@ def hexagonal_chart(
             ax.text(
                 center[0],
                 center[1],
-                a_centerNote[0].replace('#', r'$\sharp$') \
+                a_center_note[0].replace('#', r'$\sharp$') \
                                .replace('b', r'$\flat$'),
                 color=color_text,
                 horizontalalignment='center',
@@ -507,7 +507,7 @@ def hexagonal_chart(
 
                     select_data = df_pos['pos'] == pos_ser
 
-                    if pitchClassDisplay == False:
+                    if pitch_class_display == False:
                         current_sup = df_pos[select_data].iat[0, 2]
 
                     #get df for the note of reference from df_nei
@@ -517,7 +517,7 @@ def hexagonal_chart(
                     select_data = df_nei_gr['pos'] == pos_ser_n
 
                     #register the hex in function of the type of value
-                    if pitchClassDisplay:
+                    if pitch_class_display:
                         current_note = df_nei_gr[select_data].iat[0, 2]
                         df_pos = df_pos.append(
                             {'pos':(pos[0], pos[1], pos[2]),
@@ -537,7 +537,7 @@ def hexagonal_chart(
                     color_nb = 0
                     found = False
                     for l in range(df_data.shape[0]):
-                        if pitchClassDisplay:
+                        if pitch_class_display:
                             #check if he finds the note in the data and get its value for color
                             if str(int(df_data.at[l, 'pc'])) == str(current_note):
                                 if duration:
@@ -557,8 +557,8 @@ def hexagonal_chart(
                                     color_nb = norm(df_data.at[l, 'nb'])
                                 found = True
                                 
-                    if found == False and colorZeroValue != 'nan':
-                        color = colorZeroValue
+                    if found == False and color_zero_value != 'nan':
+                        color = color_zero_value
 
                     #define the color af the label in function of the color of the hexagon
                     if color_nb > 0.6:
@@ -566,7 +566,7 @@ def hexagonal_chart(
                     else:
                         color_text = 'Black'
 
-                    if pitchClassDisplay == False:
+                    if pitch_class_display == False:
                         current_note = put_flat_sharp(current_note, current_sup)
 
                     #calcul the center position of the hex in function of the coordonnate
@@ -578,7 +578,7 @@ def hexagonal_chart(
                     #if no duplicate then check if the note is already displaye
                     if duplicate == False:
                         for l in range(df_pos.shape[0] - 1):
-                            if pitchClassDisplay:
+                            if pitch_class_display:
                                 if df_pos.at[l, 'note'] == df_pos.at[df_pos.shape[0] - 1, 'note']:
                                     show_hex = False
                             else:
@@ -594,7 +594,7 @@ def hexagonal_chart(
                             radius=length,
                             facecolor=color,
                             edgecolor='Black')
-                        if pitchClassDisplay:
+                        if pitch_class_display:
                             ax.text(
                                 center[0],
                                 center[1],

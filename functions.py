@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-def get_dic_nei(pitchClassDisplay):
+def get_dic_nei(pitch_class_display):
     """for musical_plot_hex it need the neighbouring notes in the hexagonal shape, return dictionary"""
-    if pitchClassDisplay:
+    if pitch_class_display:
         dic_nei = {'ref':[0, 0, 0, 0, 0, 0,
                           1, 1, 1, 1, 1, 1,
                           2, 2, 2, 2, 2, 2,
