@@ -32,7 +32,7 @@ pip install pitchplots
 
 ## Running the tests
 
-you can first try to parse xml/xml/musicScore xml files to csv or DataFrame using our test files [data_example.mxl](data_example.mxl), that is the first ten bars of Rêveries by Debussy with:
+you can first try to parse xml/xml/musicScore xml files to csv or DataFrame using our test files [data_example.mxl](data_example.mxl), that is the Gymnopédie from Sati with:
 
 ```
 import pitchplots.parser as ppp
