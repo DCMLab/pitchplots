@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from pitchplots.functions import check_tpc, check_pc, check_duration, get_acc, get_step, get_pc
 
-def get_df_columns(location, min_note=20):
+def get_df_columns(location, min_note=20): # depreciate
     """Read a given file and put in a DataFrame the number of the column correspondant to the data_type
 
     Keyword arguments:
@@ -67,23 +67,25 @@ def get_df_long(location, data_type='tpc'):
     Return:
     return every notes with their durations and pc and tpc values (step, acc)
     """
-    df_data = pd.read_csv(location)
+    if isinstance(location, pd.DataFrame):
+        df_data = location
+    else:
+        df_data =  pd.read_csv(location)
     
     #if columns are already named correctly read them automatically
-    if df_data.columns.isin(['tpc']).any() and df_data.columns.isin(['pitch_class']).any() and df_data.columns.isin(['duration']).any():
         
-        columns = ['tpc', 'pc', 'duration']
-        df_col = pd.DataFrame(columns=columns)
-        
-        for i in range(df_data.shape[1]):
-            if df_data.columns[i] == 'tpc':
-                df_col.at[0, 'tpc'] = i
-            if df_data.columns[i] == 'pitch_class':
-                df_col.at[0, 'pc'] = i
-            if df_data.columns[i] == 'duration':
-                df_col.at[0, 'duration'] = i
-    else:
-        df_col = get_df_columns(location)
+    columns = ['tpc', 'pc', 'duration']
+    df_col = pd.DataFrame(columns=columns)
+    
+    for i in range(df_data.shape[1]):
+        if df_data.columns[i] == 'tpc':
+            df_col.at[0, 'tpc'] = i
+        if df_data.columns[i] == 'pitch_class':
+            df_col.at[0, 'pc'] = i
+        if df_data.columns[i] == 'duration':
+            df_col.at[0, 'duration'] = i
+
+    #df_col = get_df_columns(location) depreciate
         
     df_ret_data = pd.DataFrame()
 
@@ -113,7 +115,8 @@ def get_df_long(location, data_type='tpc'):
 def get_df_short(
     location,
     convert_table=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
-    data_type='tpc'):
+    data_type='tpc',
+    set_measures=None):
     """return a Dataframe with the condenced information about the piece for static plots
 
     Function:
@@ -131,22 +134,25 @@ def get_df_short(
         df_data = location
     else:
         df_data =  pd.read_csv(location)
+        
+    if pd.isnull(set_measures[0]) == False: # need raise error if no measure_no column
+        df_data.drop(df_data[df_data.measure_no < set_measures[0]].index, inplace=True)
+        df_data.drop(df_data[df_data.measure_no > set_measures[1]].index, inplace=True)
+        df_data.reset_index(drop=True, inplace=True)
     
     #if columns are already named correctly read them automatically
-    if df_data.columns.isin(['tpc']).any() and df_data.columns.isin(['pitch_class']).any() and df_data.columns.isin(['duration']).any():
-        
-        columns = ['tpc', 'pc', 'duration']
-        df_col = pd.DataFrame(columns=columns)
-        
-        for i in range(df_data.shape[1]):
-            if df_data.columns[i] == 'tpc':
-                df_col.at[0, 'tpc'] = i
-            if df_data.columns[i] == 'pitch_class':
-                df_col.at[0, 'pc'] = i
-            if df_data.columns[i] == 'duration':
-                df_col.at[0, 'duration'] = i
-    else:
-        df_col = get_df_columns(location)
+    columns = ['tpc', 'pc', 'duration']
+    df_col = pd.DataFrame(columns=columns)
+    
+    for i in range(df_data.shape[1]):
+        if df_data.columns[i] == 'tpc':
+            df_col.at[0, 'tpc'] = i
+        if df_data.columns[i] == 'pitch_class':
+            df_col.at[0, 'pc'] = i
+        if df_data.columns[i] == 'duration':
+            df_col.at[0, 'duration'] = i
+
+    #df_col = get_df_columns(location) depreciate
 
     #read with priority to tpc values
     if pd.isnull(df_col.at[0, 'tpc']) == False and data_type == 'tpc':
@@ -179,7 +185,7 @@ def get_df_short(
 
         #keep only the step from tpc
         df_tpc['tpc'] = df_tpc['tpc'].apply(get_step)
-
+        
         return df_tpc
 
     #read with priority to pc values

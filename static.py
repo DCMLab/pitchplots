@@ -10,6 +10,7 @@ from pitchplots.functions import get_acc, get_step, get_pc, get_dic_nei, put_fla
 def pie_chart(
     location,
     data_type='tpc',
+    set_measures=None, # need documentation
     log=False,
     convert_table=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
     pitch_class_display=False,
@@ -28,6 +29,7 @@ def pie_chart(
     location -- the absolute path to the .csv file containing the data
     data_type -- the type of data that contains the file (default 'tpc'), 'pc' could be use for twelve parts chart tpc form
         (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
+    set_measures -- give a set of measures example [5, 18], will display the notes of the measures 5 to 18 
     log -- if True the colors are distributed on a log scale, by default it's a lineare scale (default False)
     convert_table -- the conversion table from pitch class to tpc(F#, A, ...) format,
         the position indicate the pitch class value (default [C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B])
@@ -44,7 +46,7 @@ def pie_chart(
     """
     #settings
     convert_table = pd.Series(convert_table)
-    df = get_df_short(location, convert_table=convert_table, data_type=data_type)
+    df = get_df_short(location, convert_table=convert_table, data_type=data_type, set_measures=set_measures)
 
     #color map
     cmap = matplotlib.cm.get_cmap(cmap)
@@ -61,7 +63,7 @@ def pie_chart(
     s_fifth = pd.Series()
 
     figure_size = [figure_size*1.5, figure_size] #define the size if the figure
-    fig = plt.figure(figure_size=figure_size)
+    fig = plt.figure(figsize=figure_size)
     ax = fig.add_subplot(111, aspect='equal')
 
     #Set the order in function of fifth
@@ -275,6 +277,7 @@ def pie_chart(
 def hexagonal_chart(
     location,
     data_type='tpc',
+    set_measures=None, # need documentation
     pitch_class_display=False,
     duplicate=True,
     duration=False,
@@ -294,6 +297,7 @@ def hexagonal_chart(
     location -- the absolute path to the .csv file containing the data
     data_type -- the type of data that contains the file (default 'tpc')
         (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
+    set_measures -- give a set of measures example [5, 18], will display the notes of the measures 5 to 18
     pitch_class_display -- if True display the pitch class and not the tpc values and so the grid repeat itself.
     duplicate -- it False avoid any repetition in the grid
     duration -- if True the values taking account is the duration and note the number of appearence
@@ -316,7 +320,7 @@ def hexagonal_chart(
 
     #settings
     convert_table = pd.Series(convert_table)
-    df_data = get_df_short(location, convert_table=convert_table, data_type=data_type)
+    df_data = get_df_short(location, convert_table=convert_table, data_type=data_type, set_measures=set_measures)
     
     #constant
     HEXEDGE = math.sqrt(3)/2 #math constant
@@ -348,7 +352,7 @@ def hexagonal_chart(
 
     #define figure
     figure_size = [figure_size*1.5, figure_size] #define the size if the figure
-    fig = plt.figure(figure_size=figure_size)
+    fig = plt.figure(figsize=figure_size)
     ax = fig.add_subplot(111, aspect='equal')
     
     
@@ -626,3 +630,5 @@ def hexagonal_chart(
     ax.axis('off')
     
     return fig
+
+#hexagonal_chart('data_example.csv', set_measures=[1, 15], color_zero_value='grey')
