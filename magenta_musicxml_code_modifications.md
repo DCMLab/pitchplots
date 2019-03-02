@@ -1,0 +1,1 @@
+List of modifications to the code of the file musicxml_parser.py
