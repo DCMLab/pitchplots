@@ -1,6 +1,12 @@
 import numpy as np
 import pandas as pd
 
+# =============================================================================
+# def check_pie_chart_inputs():
+#     if data_type != 'tpc' and data_type!='pc':
+#         raise TypeError('data_type must be "pc" or "tpc"')
+# =============================================================================
+
 def get_dic_nei(pitch_class_display):
     """for musical_plot_hex it need the neighbouring notes in the hexagonal shape, return dictionary"""
     if pitch_class_display:

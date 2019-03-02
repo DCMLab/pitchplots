@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 # import xml parser from magenta
-from magenta.music import musicxml_parser
+from pitchplots.modified_musicxml_parser import MusicXMLDocument
 
 ### DEFINE PARSER
 def xml_to_csv(filepath, filename=None, save_csv=True):
@@ -44,7 +44,7 @@ def xml_to_csv(filepath, filename=None, save_csv=True):
     time_signature_on = False
     qpm_on = False
 
-    parsed = musicxml_parser.MusicXMLDocument(filepath)
+    parsed = MusicXMLDocument(filepath)
     df = pd.DataFrame(columns=columns)
 
     for part in parsed.parts:
@@ -160,7 +160,7 @@ def xml_to_csv_reduce(filepath):
                'duration', # note duration in beats as float (i.e. a quarter note is 0.25)
               ]
 
-    parsed = musicxml_parser.MusicXMLDocument(filepath)
+    parsed = MusicXMLDocument(filepath)
     df = pd.DataFrame(columns=columns)
 
     for part in parsed.parts:

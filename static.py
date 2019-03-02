@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib
 import math
+
 from pitchplots.reader import get_df_short
 from pitchplots.functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note
 
@@ -18,11 +19,11 @@ def pie_chart(
     duration=False,
     fifth=True,
     figure_size=9,
-    top_note='nan',
+    top_note=None,
     rotation=0,
     clockwise=True,
     cmap='Blues',
-    color_zero_value='nan'):
+    color_zero_value=None):
     """return the figure of a piechart with importance of the notes that are represented by the colour as a heatmap
 
     Keyword arguments:
@@ -44,6 +45,7 @@ def pie_chart(
     cmap -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
     color_zero_value -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
     """
+    
     #settings
     convert_table = pd.Series(convert_table)
     df = get_df_short(location, convert_table=convert_table, data_type=data_type, set_measures=set_measures)
@@ -130,7 +132,7 @@ def pie_chart(
                     letter = convert_table[s_tpc_format[i]]
 
                     df_tpc_pie = df_tpc_pie.append({'note':letter, 'part':1}, ignore_index=True)
-                    if color_zero_value == 'nan':
+                    if pd.isnull(color_zero_value):
                         color_note.append(cmap(0))
                     else:
                         color_note.append(color_zero_value)
@@ -150,7 +152,7 @@ def pie_chart(
                 if df_data['fifth'].isin([i + df_data['fifth'].min()]).any():
                     #get the colour for the note who has the good fifth number
                     color_note.append(cmap(norm(df_data['number'][df_data['fifth']==(i + df_data['fifth'].min())].iat[0])))
-                elif df_data['fifth'].isin([i + df_data['fifth'].min()]).any() == False and color_zero_value != 'nan':
+                elif df_data['fifth'].isin([i + df_data['fifth'].min()]).any() == False and pd.isnull(color_zero_value) == False:
                     color_note.append(color_zero_value)
                 else:
                     color_note.append(cmap(0))
@@ -161,7 +163,7 @@ def pie_chart(
             color_note = list(reversed(color_note))
 
         #calculate the angle for the topPitchClass to be at the top
-        if top_note != 'nan' and fifth == False and df_tpc_pie['note'].isin([top_note]).any() == True:
+        if pd.isnull(top_note) == False and fifth == False and df_tpc_pie['note'].isin([top_note]).any() == True:
             if clockwise:
                 rotation = rotation + 90 + df_tpc_pie.at[0, 'part'] * 15
             else:
@@ -181,7 +183,7 @@ def pie_chart(
                         rotation = rotation - 30*df_tpc_pie.at[i, 'part']
 
         #put the top note at the top
-        if top_note != 'nan' and fifth == True and df_tpc_pie['note'].isin([top_note]).any() == True:
+        if pd.isnull(top_note) == False and fifth == True and df_tpc_pie['note'].isin([top_note]).any() == True:
             if clockwise:
                 rotation = rotation + 90 + 180/df_tpc_pie.shape[0]
             else:
@@ -245,7 +247,7 @@ def pie_chart(
             if df_data.iat[i, 0] != 0:
                 color_note.append(cmap(norm(df_data.iat[i, 0])))
             else:
-                if color_zero_value == 'nan':
+                if pd.isnull(color_zero_value):
                     color_note.append(cmap(0))
                 else:
                     color_note.append(color_zero_value)
@@ -256,7 +258,7 @@ def pie_chart(
             color_note = list(reversed(color_note))
 
         #calculate the angle for the topPitchClass to be at the top
-        if top_note != 'nan':
+        if pd.isnull(top_note) == False:
             for i in range(s_tpc_format.shape[0]):
                 if top_note == (s_twelve_ones.index)[i]:
                     rotation = rotation + 75 - i * 30
@@ -289,8 +291,8 @@ def hexagonal_chart(
     text_size=1,
     figure_size=9,
     cmap='Blues',
-    color_zero_value='nan',
-    center_note='nan'):
+    color_zero_value=None,
+    center_note=None):
     """return the figure of a 2D grid of hexagons, each hexagons being a note
 
     Keyword arguments:
@@ -326,7 +328,7 @@ def hexagonal_chart(
     HEXEDGE = math.sqrt(3)/2 #math constant
 
     #intern variables
-    length = 0.05 * hex_size#radius and border length of the hexagons
+    length = 0.05 * hex_size * 1.5 * 3 / size#radius and border length of the hexagons
     center = [0.5, 0.5] # set the center on the center of the map
     size_text = length * 200 * text_size # parameter fontsize
     pos = [0, 0, 0] #x, y, z
@@ -380,7 +382,7 @@ def hexagonal_chart(
 
     #do the first hexagon of the center
     #if not define it takes the most current note
-    if(center_note == 'nan'):
+    if pd.isnull(center_note):
         #draw the hexagon
         p = patches.RegularPolygon(center, 6, radius=length, color=cmap(1/1))
         
@@ -447,7 +449,7 @@ def hexagonal_chart(
                         color_nb = norm(df_data.at[l, 'nb'])
                     found = True
                     
-        if found == False and color_zero_value != 'nan':
+        if found == False and pd.isnull(color_zero_value) == False:
             color = color_zero_value
 
         #define the color af the label in function of the color of the hexagon
@@ -561,7 +563,7 @@ def hexagonal_chart(
                                     color_nb = norm(df_data.at[l, 'nb'])
                                 found = True
                                 
-                    if found == False and color_zero_value != 'nan':
+                    if found == False and pd.isnull(color_zero_value) == False:
                         color = color_zero_value
 
                     #define the color af the label in function of the color of the hexagon
@@ -631,4 +633,5 @@ def hexagonal_chart(
     
     return fig
 
-#hexagonal_chart('data_example.csv', set_measures=[1, 15], color_zero_value='grey')
+#hexagonal_chart('data_example.csv', color_zero_value='grey', size=2)
+#pie_chart('data_example.csv', data_type='fbhw')
