@@ -55,7 +55,7 @@ or
 ```
 import pitchplots.static as pps
 
-pps.hexagonal_chart('data_example.csv')
+pps.hexagonal_chart('csv/data_example.csv')
 ```
 
 then to see all the possibilities you can look at the [documentation_hexagonal_chart.ipynb](documentation_hexagonal_chart.ipynb) for hexagonal_chart information and the [documentation_pie_chart.ipynb](documentation_pie_chart.ipynb) for pie_chart information.
