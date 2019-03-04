@@ -1,6 +1,6 @@
 # pitchplots
 
-<img   src="images/BBH4.png">
+<img   src="images/big_blue_hex_8_top.png">
 
 library plotting charts for different tonal representations
 
