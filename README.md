@@ -64,7 +64,7 @@ then to see all the possibilities you can look at the [documentation_hexagonal_c
 
 ## Functions
 
-<img   src="images/Tp1_def_hex.png"><img   src="images/Tp1_def_hex.png"><img   src="images/Tp1_def_hex.png"><img   src="images/Tp1_def_hex.png"><img   src="images/Tp1_def_hex.png"><img   src="images/Tp1_def_hex.png">
+<img   src="images/Tp1_def_hex.png"><img   src="images/Tp2_hex_orange_pc_5.png"><img   src="images/Tp3_hex_noduplicate.png"><img   src="images/Tp4_def_pie.png"><img   src="images/Tp5_red_pie_nofifth.png"><img   src="images/Tp6_log_pie.png">
 
 ## Authors
 
