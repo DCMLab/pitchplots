@@ -62,6 +62,10 @@ pps.hexagonal_chart('csv/data_example.csv')
 
 then to see all the possibilities you can look at the [documentation_hexagonal_chart.ipynb](documentation_hexagonal_chart.ipynb) for hexagonal_chart information and the [documentation_pie_chart.ipynb](documentation_pie_chart.ipynb) for pie_chart information.
 
+## Functions
+
+<img   src="images/T1_def_hex.png"><img   src="images/T1_def_hex.png"><img   src="images/T1_def_hex.png"><img   src="images/T1_def_hex.png"><img   src="images/T1_def_hex.png"><img   src="images/T1_def_hex.png">
+
 ## Authors
 
 * **Timothy Loayza**, **Fabian Moss** - *Initial work* - [pitchplots](https://github.com/DCMLab/pitchplots)
