@@ -66,6 +66,12 @@ then to see all the possibilities you can look at the [documentation_hexagonal_c
 
 <img   src="images/Tp1_def_hex.png"><img   src="images/Tp2_hex_orange_pc_5.png"><img   src="images/Tp3_hex_noduplicate.png"><img   src="images/Tp4_def_pie.png"><img   src="images/Tp5_red_pie_nofifith.png"><img   src="images/Tp6_log_pie.png">
 
+Pitchplots has 2 functions related to tonal representation and 1 for the parsing of `.mxl` and `.xml` files into `.csv`.
+
+-   `hexagonal_chart` uses a `.csv` file or a pandas DataFrame of a piece of music to do a hexagonal 2D representation.
+-   `pie_chart` uses a csv file or a pandas DataFrame of a piece of music to represent the notes by fifth or chromatic.
+-   `xml_to_csv` uses a `.mxl` or `.xml` file and parses it into a `.csv` file using the magenta musicxml_parser.py.
+
 ## Authors
 
 * **Timothy Loayza**, **Fabian Moss** - *Initial work* - [pitchplots](https://github.com/DCMLab/pitchplots)
