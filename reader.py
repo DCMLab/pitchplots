@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 from pitchplots.functions import check_tpc, check_pc, check_duration, get_acc, get_step, get_pc
 
@@ -135,7 +134,7 @@ def get_df_short(
     else:
         df_data =  pd.read_csv(location)
         
-    if pd.isnull(set_measures[0]) == False: # need raise error if no measure_no column
+    if type(set_measures) is list: # need raise error if no measure_no column
         df_data.drop(df_data[df_data.measure_no < set_measures[0]].index, inplace=True)
         df_data.drop(df_data[df_data.measure_no > set_measures[1]].index, inplace=True)
         df_data.reset_index(drop=True, inplace=True)

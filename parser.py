@@ -10,6 +10,12 @@ import pandas as pd
 # import xml parser from magenta
 from pitchplots.modified_musicxml_parser import MusicXMLDocument
 
+class ParseError(Exception):
+    """
+    Exception thrown when the MusicXML contents cannot be parsed.
+    """
+    pass
+
 ### DEFINE PARSER
 def xml_to_csv(filepath, filename=None, save_csv=True):
     """return the Dataframe, and possbily register it in csv, of the musicxml file
@@ -43,8 +49,12 @@ def xml_to_csv(filepath, filename=None, save_csv=True):
     key_signature_on = False
     time_signature_on = False
     qpm_on = False
-
-    parsed = MusicXMLDocument(filepath)
+    
+    try:
+        parsed = MusicXMLDocument(filepath)
+    except:
+        raise ParseError('There is a problem with the path to the xml/mxl file or the files are not standard.')
+    
     df = pd.DataFrame(columns=columns)
 
     for part in parsed.parts:

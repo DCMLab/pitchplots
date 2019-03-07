@@ -1,12 +1,28 @@
-import numpy as np
+import math
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib
-import math
 
 from pitchplots.reader import get_df_short
-from pitchplots.functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note
+from pitchplots.functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note, check_tpc, check_pc
+
+class StaticError(Exception):
+    """Exception thrown when the static module cannot plot."""
+    pass
+
+class InvalidDataTypeTypeError(StaticError):
+    """Exception thrown when data_type is not pc or tpc"""
+    pass
+
+class InvalidSetMeasureTypeError(StaticError):
+    """Exception thrown when set_measure is not a list of 2 numbers with the first and last measures to take in count"""
+    pass
+
+class InvalidConvertTableTypeError(StaticError):
+    """Exception thrown when convert_table does not have 12 elements or its elements are not tpc notes"""
+    pass
 
 def pie_chart(
     location,
@@ -46,6 +62,20 @@ def pie_chart(
     color_zero_value -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
     """
     
+#    if data_type != 'pc' or data_type != 'tpc':
+#        raise InvalidDataTypeTypeError('the only possible values for data_type are "pc" and "tpc".')
+#    
+#    if set_measures != None:
+#        if type(set_measures) is list:
+#            if len(set_measures) != 2:
+#                raise InvalidSetMeasureTypeError('the only possible values for set_measure are list of two numbers, the first and last measure')
+#        else:
+#            raise InvalidSetMeasureTypeError('the only possible values for set_measure are list of two numbers, the first and last measure')
+#
+#    if type(set_measures) is list:
+#        if len(set_measures) != 12:
+#            raise InvalidSetMeasureTypeError('the only possible values for set_measure are list of two numbers, the first and last measure')
+                
     #settings
     convert_table = pd.Series(convert_table)
     df = get_df_short(location, convert_table=convert_table, data_type=data_type, set_measures=set_measures)
@@ -56,6 +86,13 @@ def pie_chart(
 
     #dataFrame for the plot if tpc
     df_tpc_pie = pd.DataFrame(columns=['note', 'part', 'pc'])
+
+    #put top_note in the right form
+    if pd.isnull(top_note) == False:
+        if check_tpc(top_note) and pitch_class_display:
+            top_note = get_pc(top_note)
+        if check_pc(top_note) and not pitch_class_display:
+            top_note = convert_table[int(top_note)]
 
     #remember position of data in Series
     s_pos = pd.Series()
@@ -632,6 +669,3 @@ def hexagonal_chart(
     ax.axis('off')
     
     return fig
-
-#hexagonal_chart('data_example.csv', color_zero_value='grey', size=2)
-#pie_chart('data_example.csv', data_type='fbhw')
