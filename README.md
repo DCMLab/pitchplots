@@ -2,8 +2,6 @@
 
 <img   src="images/big_blue_hex_8_top.png">
 
-![blabla](images/big_blue_hex_8_top.png)
-
 library plotting charts for different tonal representations
 
 ## Getting Started
