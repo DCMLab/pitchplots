@@ -15,7 +15,7 @@ The library contains the following files
 
 ### Prerequisites
 
-In order to use *pitchplots* you need a running Python environment and the following libraries:
+In order to use **pitchplots** you need a running Python environment and the following libraries:
 * matplotlib
 * pandas
 * numpy
@@ -36,9 +36,11 @@ or if you're using the anaconda prompt
 pip install pitchplots
 ```
 
-## Running the tests
+## Plotting files
 
-you can first try to parse xml/musicScore xml files to csv or DataFrame using our test files [data_example.mxl](data_example.mxl), that is the Gymnopédie from Sati with:
+**Pitchplots** plots note distributions from MusicXML files (`.xml` of `.mxl`). You can either specify your own file or use the [test file](data_example.mxl) `data_example.mxl`. contained in the package.
+
+The first step is to parse the file into a note list representation that corresponds to a pandas DataFrame where each line is a note or a rest.
 
 ```python
 import os
@@ -46,9 +48,11 @@ import os
 import pitchplots
 import pitchplots.parser as ppp
 
-example_path = os.path.join(pitchplots.__path__[0], 'data_example.mxl')
-df_data_example = ppp.xml_to_csv(example_path, save_csv=True)
+path = os.path.join(pitchplots.__path__[0], 'data_example.mxl')
+df_data_example = ppp.xml_to_csv(path, save_csv=True)
 ```
+
+To use your own file, replace `path` with the path to your file.
 
 then you can try the static module by passing csv files or Dataframe:
 
