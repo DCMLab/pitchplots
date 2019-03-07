@@ -36,7 +36,9 @@ or if you're using the anaconda prompt
 pip install pitchplots
 ```
 
-## Plotting files
+## Working with files
+
+### Parsing
 
 **Pitchplots** plots note distributions from MusicXML files (`.xml` of `.mxl`). You can either specify your own file or use the [test file](data_example.mxl) `data_example.mxl`. contained in the package.
 
@@ -54,21 +56,22 @@ df_data_example = ppp.xml_to_csv(path, save_csv=True)
 
 To use your own file, replace `path` with the path to your file.
 
-then you can try the static module by passing csv files or Dataframe:
+## Plotting
+
+In order to plot the notes of a piece, import the `pitchplots.static` module and use one of its plotting functions. They take as input the output of the parser, i.e. either a DataFrame object:
 
 ```python
 import pitchplots.static as pps
 
 pps.hexagonal_chart(df_data_example)
 ```
-or
+ or a CSV file:
 ```python
 import pitchplots.static as pps
 
 pps.hexagonal_chart('csv/data_example.csv')
 ```
-
-then to see all the possibilities you can look at the [documentation_hexagonal_chart.ipynb](documentation_hexagonal_chart.ipynb) for hexagonal_chart information and the [documentation_pie_chart.ipynb](documentation_pie_chart.ipynb) for pie_chart information.
+A more detailed overview about the functionality of the plotting functions is given in the notebooks [documentation_hexagonal_chart.ipynb](documentation_hexagonal_chart.ipynb) for information on `hexagonal_chart` and [documentation_pie_chart.ipynb](documentation_pie_chart.ipynb) for information on `pie_chart information`.
 
 ## Functions
 
