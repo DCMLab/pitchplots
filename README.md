@@ -35,6 +35,15 @@ or if you're using the anaconda prompt
 ```
 pip install pitchplots
 ```
+## Functions
+
+<img src="images/Tp1_def_hex.png">  <img src="images/Tp2_hex_orange_pc_5.png">  <img src="images/Tp3_hex_noduplicate.png">  <img src="images/Tp4_def_pie.png">  <img src="images/Tp5_red_pie_nofifith.png">  <img src="images/Tp6_log_pie.png">
+
+Pitchplots has 2 functions related to tonal representation and 1 for the parsing of `.mxl` and `.xml` files into `.csv`.
+
+-   `hexagonal_chart` uses a `.csv` file or a pandas DataFrame of a piece of music to do a hexagonal 2D representation.
+-   `pie_chart` uses a csv file or a pandas DataFrame of a piece of music to represent the notes by fifth or chromatic.
+-   `xml_to_csv` uses a `.mxl` or `.xml` file and parses it into a `.csv` file using the magenta musicxml_parser.py.
 
 ## Working with files
 
@@ -76,16 +85,6 @@ In both cases the output should look like the following image (of course, the no
 ![hex_example](images/Tp1_def_hex.png)
 
 A more detailed overview about the functionality of the plotting functions is given in the notebooks [documentation_hexagonal_chart.ipynb](documentation_hexagonal_chart.ipynb) for information on `hexagonal_chart` and [documentation_pie_chart.ipynb](documentation_pie_chart.ipynb) for information on `pie_chart information`.
-
-## Functions
-
-<img src="images/Tp1_def_hex.png">  <img src="images/Tp2_hex_orange_pc_5.png">  <img src="images/Tp3_hex_noduplicate.png">  <img src="images/Tp4_def_pie.png">  <img src="images/Tp5_red_pie_nofifith.png">  <img src="images/Tp6_log_pie.png">
-
-Pitchplots has 2 functions related to tonal representation and 1 for the parsing of `.mxl` and `.xml` files into `.csv`.
-
--   `hexagonal_chart` uses a `.csv` file or a pandas DataFrame of a piece of music to do a hexagonal 2D representation.
--   `pie_chart` uses a csv file or a pandas DataFrame of a piece of music to represent the notes by fifth or chromatic.
--   `xml_to_csv` uses a `.mxl` or `.xml` file and parses it into a `.csv` file using the magenta musicxml_parser.py.
 
 ## Authors
 
