@@ -1,32 +1,36 @@
 # pitchplots
 
-<img   src="images/big_blue_hex_8_top.png">
+![header](images/big_blue_hex_8_top.png)
 
 library plotting charts for different tonal representations
 
 ## Getting Started
 
-The program consist in the following files: functions.py, reader.py, modified_music_xml.py, parser.py and static.py 
+The library contains the following files
+* `functions.py`, 
+* `reader.py`, 
+* `modified_music_xml.py`, 
+* `parser.py`, and 
+* `static.py`
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+In order to use *pitchplots* you need a running Python environment and the following libraries:
+* matplotlib
+* pandas
+* numpy
 
-```
-You will need python on your computer and the following libaries: matplotlib, pandas and numpy
-```
+Note that if you are using the Anaconda distribution, these libraries are already installed.
 
-note that if you are using anaconda, these libraries are already installed
+### Installation
 
-### Installing
-
-You can download the pitchplots package on pypi with pip using the following command in the prompt:
+You can install the pitchplots package on pypi with pip using the following command in the prompt:
 
 ```
 python3 -m pip install pitchplots
 ```
 
-or if you're using anaconda prompt
+or if you're using the anaconda prompt
 
 ```
 pip install pitchplots
@@ -36,7 +40,7 @@ pip install pitchplots
 
 you can first try to parse xml/musicScore xml files to csv or DataFrame using our test files [data_example.mxl](data_example.mxl), that is the Gymnopédie from Sati with:
 
-```
+```python
 import os
 
 import pitchplots
@@ -48,13 +52,13 @@ df_data_example = ppp.xml_to_csv(example_path, save_csv=True)
 
 then you can try the static module by passing csv files or Dataframe:
 
-```
+```python
 import pitchplots.static as pps
 
 pps.hexagonal_chart(df_data_example)
 ```
 or
-```
+```python
 import pitchplots.static as pps
 
 pps.hexagonal_chart('csv/data_example.csv')
@@ -76,7 +80,7 @@ Pitchplots has 2 functions related to tonal representation and 1 for the parsing
 
 * **Timothy Loayza**, **Fabian Moss** - *Initial work* - [pitchplots](https://github.com/DCMLab/pitchplots)
 
-## Use of magenta's code
+## Usage of Magenta's code
 
 The [modified_musicxml_parser.py](modified_musicxml_parser.py) file is taken from the [magenta](https://github.com/tensorflow/magenta) project and has been modified. Therefore the modifications are listed in the [magenta_musicxml_code_modifications.md](magenta_musicxml_code_modifications.md) file and there is the [magenta_LICENSE.md](magenta_LICENSE.md).
 
