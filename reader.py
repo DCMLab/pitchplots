@@ -2,12 +2,12 @@ import numpy as np
 import pandas as pd
 from pitchplots.functions import check_tpc, check_pc, check_duration, get_acc, get_step, get_pc
 
-def get_df_columns(location, minNote = 50):
-    """Read a given file and put in a DataFrame the number of the column correspondant to the dataType
+def get_df_columns(location, min_note=20): # depreciate
+    """Read a given file and put in a DataFrame the number of the column correspondant to the data_type
 
     Keyword arguments:
     location -- the absolute path to the .csv file containing the data
-    minNote -- the minimum number of notes in the datas, can be set to 0, but useful for reading the file
+    min_note -- the minimum number of notes in the datas, can be set to 0, but useful for reading the file
     Return:
     return a small DataFrame with the columns of the tpc, pc and duration values if they exist
     """
@@ -21,21 +21,21 @@ def get_df_columns(location, minNote = 50):
     columns = ['tpc', 'pc', 'duration']
     df_ret_col = pd.DataFrame(columns=columns)
 
-    #if columns are already named correctly i read them automatically
-    if df_data.columns.isin(['tpc']).any() and df_data.columns.isin(['pitch_class']).any() and df_data.columns.isin(['duration']).any():
-        for i in range(df_data.shape[1]):
-            if df_data.columns[i] == 'tpc':
-                df_ret_col.at[0, 'tpc'] = i
-            if df_data.columns[i] == 'pitch_class':
-                df_ret_col.at[0, 'pc'] = i
-            if df_data.columns[i] == 'duration':
-                df_ret_col.at[0, 'duration'] = i
-        return df_ret_col
+    #if columns are already named correctly i read them automatically (not needed for the moment) 
+    #if df_data.columns.isin(['tpc']).any() and df_data.columns.isin(['pitch_class']).any() and df_data.columns.isin(['duration']).any():
+    #    for i in range(df_data.shape[1]):
+    #        if df_data.columns[i] == 'tpc':
+    #            df_ret_col.at[0, 'tpc'] = i
+    #        if df_data.columns[i] == 'pitch_class':
+    #            df_ret_col.at[0, 'pc'] = i
+    #        if df_data.columns[i] == 'duration':
+    #            df_ret_col.at[0, 'duration'] = i
+    #    return df_ret_col
     
     #read every columns
     for i in range(df_data.shape[1]):
 
-        if df_data[df_data.columns[i]].dropna().shape[0] > minNote:
+        if df_data[df_data.columns[i]].dropna().shape[0] > min_note:
             #no error detected for pc
             if df_data[df_data.columns[i]].dropna().apply(check_pc).all() == True:
                 col_pc = True
@@ -58,36 +58,38 @@ def get_df_columns(location, minNote = 50):
     return df_ret_col
 
 #========================================================================================================
-def get_df_long(location, dataType='tpc'):
-    """get the columns to read and put them in a DataFrame
+def get_df_long(location, data_type='tpc'):
+    """return the important complete columns of the Dataframe of the piece 
 
     Keyword arguments:
     location -- the absolute path to the .csv file containing the data
-    dataType -- tell the program to read primarily the tpc or pc values
+    data_type -- tell the program to read primarily the tpc or pc values
     Return:
     return every notes with their durations and pc and tpc values (step, acc)
     """
-    df_data = pd.read_csv(location)
+    if isinstance(location, pd.DataFrame):
+        df_data = location
+    else:
+        df_data =  pd.read_csv(location)
     
     #if columns are already named correctly read them automatically
-    if df_data.columns.isin(['tpc']).any() and df_data.columns.isin(['pitch_class']).any() and df_data.columns.isin(['duration']).any():
         
-        columns = ['tpc', 'pc', 'duration']
-        df_col = pd.DataFrame(columns=columns)
-        
-        for i in range(df_data.shape[1]):
-            if df_data.columns[i] == 'tpc':
-                df_col.at[0, 'tpc'] = i
-            if df_data.columns[i] == 'pitch_class':
-                df_col.at[0, 'pc'] = i
-            if df_data.columns[i] == 'duration':
-                df_col.at[0, 'duration'] = i
-    else:
-        df_col = get_df_columns(location)
+    columns = ['tpc', 'pc', 'duration']
+    df_col = pd.DataFrame(columns=columns)
+    
+    for i in range(df_data.shape[1]):
+        if df_data.columns[i] == 'tpc':
+            df_col.at[0, 'tpc'] = i
+        if df_data.columns[i] == 'pitch_class':
+            df_col.at[0, 'pc'] = i
+        if df_data.columns[i] == 'duration':
+            df_col.at[0, 'duration'] = i
+
+    #df_col = get_df_columns(location) depreciate
         
     df_ret_data = pd.DataFrame()
 
-    if pd.isnull(df_col.at[0, 'tpc']) == False and dataType == 'tpc':
+    if pd.isnull(df_col.at[0, 'tpc']) == False and data_type == 'tpc':
         df_ret_data['tpc'] = pd.Series(df_data.iloc[:, df_col.at[0, 'tpc']])
         
         #add the sup column
@@ -100,7 +102,7 @@ def get_df_long(location, dataType='tpc'):
         if isinstance(df_col.at[0, 'duration'], int):
             df_ret_data['duration'] = pd.Series(df_data.iloc[:, df_col.at[0, 'duration']])
 
-    if pd.isnull(df_col.at[0, 'pc']) == False and dataType == 'pc':
+    if pd.isnull(df_col.at[0, 'pc']) == False and data_type == 'pc':
         df_ret_data['pc'] = pd.Series(df_data.iloc[:, df_col.at[0, 'pc']])
         
         #check if the columns exist for duration
@@ -112,9 +114,10 @@ def get_df_long(location, dataType='tpc'):
 #=========================================================================================================
 def get_df_short(
     location,
-    convertTable=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
-    dataType='tpc'):
-    """get the columns to read and put the important elements in a DataFrame
+    convert_table=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
+    data_type='tpc',
+    set_measures=None):
+    """return a Dataframe with the condenced information about the piece for static plots
 
     Function:
     Get a file columns and read it to create a dataFrame with the following informations:
@@ -122,34 +125,37 @@ def get_df_short(
         tpc format note('tpc'), sharps and flats('sup')
     Keyword arguments:
     location -- the absolute path to the .csv file containing the data
-    dataType -- the type of data that contains the file (default 'tpc')
+    data_type -- the type of data that contains the file (default 'tpc')
         (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
-    convertTable -- the conversion table from pitch class to tpc(F#, A, ...) format,
+    convert_table -- the conversion table from pitch class to tpc(F#, A, ...) format,
         the position indicate the pitch class value (default [C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B])
     """
     if isinstance(location, pd.DataFrame):
         df_data = location
     else:
         df_data =  pd.read_csv(location)
+        
+    if pd.isnull(set_measures[0]) == False: # need raise error if no measure_no column
+        df_data.drop(df_data[df_data.measure_no < set_measures[0]].index, inplace=True)
+        df_data.drop(df_data[df_data.measure_no > set_measures[1]].index, inplace=True)
+        df_data.reset_index(drop=True, inplace=True)
     
     #if columns are already named correctly read them automatically
-    if df_data.columns.isin(['tpc']).any() and df_data.columns.isin(['pitch_class']).any() and df_data.columns.isin(['duration']).any():
-        
-        columns = ['tpc', 'pc', 'duration']
-        df_col = pd.DataFrame(columns=columns)
-        
-        for i in range(df_data.shape[1]):
-            if df_data.columns[i] == 'tpc':
-                df_col.at[0, 'tpc'] = i
-            if df_data.columns[i] == 'pitch_class':
-                df_col.at[0, 'pc'] = i
-            if df_data.columns[i] == 'duration':
-                df_col.at[0, 'duration'] = i
-    else:
-        df_col = get_df_columns(location)
+    columns = ['tpc', 'pc', 'duration']
+    df_col = pd.DataFrame(columns=columns)
+    
+    for i in range(df_data.shape[1]):
+        if df_data.columns[i] == 'tpc':
+            df_col.at[0, 'tpc'] = i
+        if df_data.columns[i] == 'pitch_class':
+            df_col.at[0, 'pc'] = i
+        if df_data.columns[i] == 'duration':
+            df_col.at[0, 'duration'] = i
+
+    #df_col = get_df_columns(location) depreciate
 
     #read with priority to tpc values
-    if pd.isnull(df_col.at[0, 'tpc']) == False and dataType == 'tpc':
+    if pd.isnull(df_col.at[0, 'tpc']) == False and data_type == 'tpc':
         s_tpc = df_data.iloc[:, df_col.at[0, 'tpc']]
         s_tpc = s_tpc.groupby(s_tpc).size()
 
@@ -179,11 +185,11 @@ def get_df_short(
 
         #keep only the step from tpc
         df_tpc['tpc'] = df_tpc['tpc'].apply(get_step)
-
+        
         return df_tpc
 
     #read with priority to pc values
-    if pd.isnull(df_col.at[0, 'pc']) == False and dataType == 'pc':
+    if pd.isnull(df_col.at[0, 'pc']) == False and data_type == 'pc':
         s_pc = df_data.iloc[:, df_col.at[0, 'pc']]
         s_pc = s_pc.groupby(s_pc).size()
 
@@ -208,7 +214,7 @@ def get_df_short(
         #add the tpc column
         s_tpc_pc = []
         for i in range(df_pc.shape[0]):
-            s_tpc_pc.append(convertTable[int(df_pc.at[i, 'pc'])])
+            s_tpc_pc.append(convert_table[int(df_pc.at[i, 'pc'])])
 
         df_pc['tpc'] = pd.Series(s_tpc_pc)
 
