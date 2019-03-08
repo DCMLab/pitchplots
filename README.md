@@ -87,14 +87,15 @@ In both cases the output should look like the following image (of course, the no
 
 A more detailed overview about the functionality of the plotting functions is given in the notebooks [documentation_hexagonal_chart.ipynb](documentation_hexagonal_chart.ipynb) for information on `hexagonal_chart` and [documentation_pie_chart.ipynb](documentation_pie_chart.ipynb) for information on `pie_chart information`.
 
-## Authors
+## Further Information
+### Authors
+* [**Fabian C. Moss**](https://github.com/fabianmoss)
+* **Timothy Loayza** - *Initial work* - [pitchplots](https://github.com/DCMLab/pitchplots)
 
-* **Timothy Loayza**, **Fabian Moss** - *Initial work* - [pitchplots](https://github.com/DCMLab/pitchplots)
-
-## Usage of Magenta's code
+### Usage of Magenta's code
 
 The [modified_musicxml_parser.py](modified_musicxml_parser.py) file is taken from the [TensorFlow Magenta](https://github.com/tensorflow/magenta) project and has been modified. See the [modifications](magenta_musicxml_code_modifications.md) and the [Magenta License](magenta_LICENSE.md).
 
-## License
+### License
 
 Pitchplots is licensed under the MIT License - see [LICENSE.md](LICENSE.md) file for details
