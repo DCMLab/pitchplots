@@ -66,7 +66,7 @@ df_data_example = ppp.xml_to_csv(path, save_csv=True)
 
 To use your own file, replace `path` with the path to your file.
 
-## Plotting
+### Plotting
 
 In order to plot the notes of a piece, import the `pitchplots.static` module and use one of its plotting functions. They take as input the output of the parser, i.e. either a DataFrame object:
 
