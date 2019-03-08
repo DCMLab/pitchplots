@@ -52,7 +52,7 @@ and one function to parse (compressed) MusicXML files
 
 **Pitchplots** plots note distributions from MusicXML files (`.xml` of `.mxl`). You can either specify your own file or use the [test file](data_example.mxl) `data_example.mxl`. contained in the package.
 
-The first step is to parse the file into a note list representation that corresponds to a pandas DataFrame where each line is a note or a rest.
+The first step is to parse the file into a note list representation that is stored in a pandas DataFrame where each line corresponds to a note or a rest.
 
 ```python
 import os
