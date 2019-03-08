@@ -15,7 +15,7 @@ The library contains the following files
 
 ### Prerequisites
 
-In order to use **pitchplots** you need a running Python environment and the following libraries:
+In order to use **pitchplots** you need a running Python 3 environment and the following libraries:
 * matplotlib
 * pandas
 * numpy
