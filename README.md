@@ -58,28 +58,28 @@ The first step is to parse the file into a note list representation that is stor
 import os
 
 import pitchplots
-import pitchplots.parser as ppp
+from pitchplots.parser import xml_to_csv
 
 path = os.path.join(pitchplots.__path__[0], 'data_example.mxl')
-df_data_example = ppp.xml_to_csv(path, save_csv=True)
+df_data_example = xml_to_csv(path, save_csv=True)
 ```
 
-To use your own file, replace `path` with the path to your file.
+To use your own file, replace `path` with the location of your file.
 
 ### Plotting
 
 In order to plot the notes of a piece, import the `pitchplots.static` module and use one of its plotting functions. They take as input the output of the parser, i.e. either a DataFrame object:
 
 ```python
-import pitchplots.static as pps
+from pitchplots.static import hexagonal_chart
 
-pps.hexagonal_chart(df_data_example)
+hexagonal_chart(df_data_example)
 ```
  or a CSV file:
 ```python
-import pitchplots.static as pps
+from pitchplots.static import hexagonal_chart
 
-pps.hexagonal_chart('csv/data_example.csv')
+hexagonal_chart('csv/data_example.csv')
 ```
 In both cases the output should look like the following image (of course, the note distribution depends on the piece you are plotting):
 
