@@ -55,31 +55,28 @@ and one function to parse (compressed) MusicXML files
 The first step is to parse the file into a note list representation that is stored in a pandas DataFrame where each line corresponds to a note or a rest.
 
 ```python
-import os
+import pitchplots.parser as ppp
 
-import pitchplots
-from pitchplots.parser import xml_to_csv
-
-path = os.path.join(pitchplots.__path__[0], 'data_example.mxl')
-df_data_example = xml_to_csv(path, save_csv=True)
+# If no filepath is specified, will automatically charge data_example.mxl
+df_data_example = ppp.xml_to_csv(save_csv=True)
 ```
 
-To use your own file, replace `path` with the location of your file.
+To use your own file, add `filepath=` with the location of your file in the parameters of the function `xml_to_csv`.
 
 ### Plotting
 
 In order to plot the notes of a piece, import the `pitchplots.static` module and use one of its plotting functions. They take as input the output of the parser, i.e. either a DataFrame object:
 
 ```python
-from pitchplots.static import hexagonal_chart
+import pitchplots.static as pps
 
-hexagonal_chart(df_data_example)
+pps.hexagonal_chart(df_data_example)
 ```
  or a CSV file:
 ```python
-from pitchplots.static import hexagonal_chart
+import pitchplots.static as pps
 
-hexagonal_chart('csv/data_example.csv')
+pps.hexagonal_chart('csv/data_example.csv')
 ```
 In both cases the output should look like the following image (of course, the note distribution depends on the piece you are plotting):
 
@@ -90,7 +87,7 @@ A more detailed overview about the functionality of the plotting functions is gi
 ## Further Information
 ### Authors
 * [**Fabian C. Moss**](https://github.com/fabianmoss)
-* **Timothy Loayza** - *Initial work* - [pitchplots](https://github.com/DCMLab/pitchplots)
+* [**Timothy Loayza**](https://github.com/TimothyLoayza)
 
 ### Usage of Magenta's code
 
