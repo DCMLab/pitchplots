@@ -5,42 +5,48 @@ import matplotlib.patches as patches
 import matplotlib
 import math
 from pitchplots.reader import get_df_short
-# from pitchplots.functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note #
+# from pitchplots.functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note # 
 from functions import get_acc, get_step, get_pc, get_dic_nei, put_flat_sharp, get_fifth_nb, get_fifth_note #relative paths are better
 import re
 
-def line_of_fifths(df, xmin=None, xmax=None, color='lightgrey', normalize=False, figsize=(6,4)):
+def barplot(
+    location,
+    dataType='tpc',
+    log=False,
+#     convertTable=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
+#     pitchClassDisplay=False,
+#     duration=False,
+    fifth=True,
+    figsize=(6,4),
+    rotation=0,
+    normalize=False):
+    """Show note frequencies as a bar plot."""
+    
+    df = pd.read_csv(location)
+    
+    if dataType=='tpc':
+        s = df.tpc
+    elif dataType=='pc':
+        s = df.pc
+    else:
+        print('Keyword `dataType` not specified correctly.')
 
-    ### LINE OF FIFTHS ################################################
-    steps = {"F": -1, "C": 0, "G": 1, "D": 2, "A": 3, "E": 4, "B": 5}
-
-    d = {}
-
-    for step, accidentals in steps.items():
-        d.update({step : accidentals})
-    for step, accidentals in steps.items():
-        d.update({step+'#' : accidentals+7})
-    for step, accidentals in steps.items():
-        d.update({step+'b' : accidentals-7})
-    for step, accidentals in steps.items():
-        d.update({step+'x' : accidentals+14})
-    for step, accidentals in steps.items():
-        d.update({step+'bb' : accidentals-14})
-
-    lof = sorted(d, key=d.__getitem__)
-    #####################################################################
-
-    tpc_counts = df.tpc.value_counts(normalize=normalize).reindex(lof).fillna(0)
-
-    try:
-        assert tpc_counts.index.get_loc(xmin) < tpc_counts.index.get_loc(xmax)
-        tpc_counts = tpc_counts[xmin:xmax]
-    except AssertionError as e:
-        print(f'Error: xmin ({xmin}) is higher than xmax ({xmax}).')
-        return
-
+    # count notes
+    counts = s.value_counts(normalize=normalize)    
+    
+    min_lof = min([get_fifth_nb(get_step(i), get_acc(i)) for i in counts.index])
+    max_lof = max([get_fifth_nb(get_step(i), get_acc(i)) for i in counts.index])
+    
+    lof_counts = [get_fifth_note(i) for i in range(min_lof, max_lof+1)]
+    print(lof_counts)
+        
+    ## plot
     fig, ax = plt.subplots(figsize=figsize)
-    tpc_counts.plot(kind='bar', ax=ax, color=color)
+    counts.plot(kind='bar', ax=ax, logy=log, rot=rotation,edgecolor='k')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    
+    return fig
 
 def pie_chart(
     location,
@@ -127,7 +133,7 @@ def pie_chart(
             norm = matplotlib.colors.LogNorm(vmin=min_value, vmax=max_value)
         else:
             norm = matplotlib.colors.Normalize(0, vmax=max_value)
-
+        
         #for chromatic order
         if fifth == False:
 
@@ -138,7 +144,7 @@ def pie_chart(
                 if df_data['pc'].isin([s_tpc_format[i]]).any():
                     count = 0
                     s_pos.drop(s_pos.index, inplace=True)
-
+                    
                     #count how much time there is tpc values for a same pitch class
                     for j in range(df_data['pc'].isin([s_tpc_format[i]]).shape[0]):
                        if df_data['pc'].isin([s_tpc_format[i]])[j]:
@@ -179,7 +185,7 @@ def pie_chart(
                 df_tpc_pie.at[i, 'part'] = 1
                 df_tpc_pie.at[i, 'note'] = get_fifth_note(i + df_data['fifth'].min())
                 df_tpc_pie.at[i, 'pc'] = get_pc(df_tpc_pie.at[i, 'note'])
-
+                
                 if df_data['fifth'].isin([i + df_data['fifth'].min()]).any():
                     #get the colour for the note who has the good fifth number
                     color_note.append(cmap(norm(df_data['number'][df_data['fifth']==(i + df_data['fifth'].min())].iat[0])))
@@ -228,16 +234,16 @@ def pie_chart(
                         rotation = rotation + 360/df_tpc_pie.shape[0]
                     else:
                         rotation = rotation - 360/df_tpc_pie.shape[0]
-
+                
 
         #put nice sharps and flats
         for i in range(df_tpc_pie.shape[0]):
             df_tpc_pie.at[i, 'note'] = df_tpc_pie.at[i, 'note'].replace('b', r'$\flat$')\
                                                                .replace('#', r'$\sharp$')
-
+            
         #plot the piechart with index 'tpc'
         df_tpc_pie.index = df_tpc_pie['note']
-
+        
         #do the pie chart
         ax.pie(labels=df_tpc_pie.index, x=df_tpc_pie['part'], colors=color_note, startangle=rotation)
 
@@ -245,7 +251,7 @@ def pie_chart(
         if colorbar:
             ax2 = fig.add_subplot(1, 10, 1)
             cb1 = matplotlib.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm, orientation='vertical')
-
+            
     #display with the pc values
     else:
         #put the right values in 'number'
@@ -267,7 +273,7 @@ def pie_chart(
             norm = matplotlib.colors.LogNorm(vmin=min_value, vmax=max_value)
         else:
             norm = matplotlib.colors.Normalize(0, vmax=max_value)
-
+        
         #set data df_data
         df_data = (df_data.groupby('pc')).sum()
         df_data = df_data.reindex(s_tpc_format)
@@ -301,7 +307,7 @@ def pie_chart(
         if colorbar:
             ax2 = fig.add_subplot(1, 10, 1)
             cb1 = matplotlib.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm, orientation='vertical')
-
+        
     return fig
 
 #=====================================================================================================
@@ -352,7 +358,7 @@ def hexagonal_chart(
     #settings
     convertTable = pd.Series(convertTable)
     df_data = get_df_short(location, convertTable=convertTable, dataType=dataType)
-
+    
     #constant
     HEXEDGE = math.sqrt(3)/2 #math constant
 
@@ -385,8 +391,8 @@ def hexagonal_chart(
     figsize = [figSize*1.5, figSize] #define the size if the figure
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111, aspect='equal')
-
-
+    
+    
     #colormap for the layout
     cmap = matplotlib.cm.get_cmap(cmap)
 
@@ -414,7 +420,7 @@ def hexagonal_chart(
     if(centerNote == 'nan'):
         #draw the hexagon
         p = patches.RegularPolygon(center, 6, radius=length, color=cmap(1/1))
-
+        
         if pitchClassDisplay:
             ax.text(
                 center[0],
@@ -441,7 +447,7 @@ def hexagonal_chart(
                 {'pos':(0,0,0), 'note':df_data['tpc'][0], 'sup':df_data['sup'][0]},
                 ignore_index=True)
         ax.add_patch(p)
-
+        
     else: #read the given note and display it
         if pitchClassDisplay:
             df_pos = df_pos.append(
@@ -453,7 +459,7 @@ def hexagonal_chart(
             df_pos = df_pos.append(
                 {'pos':(0,0,0), 'note':a_centerNote[0], 'sup':a_centerNote[1]},
                 ignore_index=True)
-
+        
         #set the color
         color = cmap(0)
         found = False
@@ -477,7 +483,7 @@ def hexagonal_chart(
                         color = cmap(norm(df_data.at[l, 'nb']))
                         color_nb = norm(df_data.at[l, 'nb'])
                     found = True
-
+                    
         if found == False and colorZeroValue != 'nan':
             color = colorZeroValue
 
@@ -486,7 +492,7 @@ def hexagonal_chart(
             color_text = 'White'
         else:
             color_text = 'Black'
-
+            
         if pitchClassDisplay == False:
             a_centerNote[0] = put_flat_sharp(a_centerNote[0], a_centerNote[1])
 
@@ -531,9 +537,9 @@ def hexagonal_chart(
                     #position of the nearest hexagon already defined
                     pos_ser = (
                         pos[0] + x_list[j+i*2],
-                        pos[1] + y_list[j+i*2],
+                        pos[1] + y_list[j+i*2], 
                         pos[2] + z_list[j+i*2])
-
+                    
                     #position to search in df_nei
                     pos_ser_n = (
                         x_list[j+i*2] * (-1),
@@ -566,7 +572,7 @@ def hexagonal_chart(
                                 'note':current_note,
                                 'sup':current_sup},
                             ignore_index=True)
-
+                        
                     #set the facecolor of the hex
                     color = cmap(0)
                     color_nb = 0
@@ -591,7 +597,7 @@ def hexagonal_chart(
                                     color = cmap(norm(df_data.at[l, 'nb']))
                                     color_nb = norm(df_data.at[l, 'nb'])
                                 found = True
-
+                                
                     if found == False and colorZeroValue != 'nan':
                         color = colorZeroValue
 
@@ -649,7 +655,7 @@ def hexagonal_chart(
                                 verticalalignment='center',
                                 size=size_text)
                         ax.add_patch(p)
-
+    
     #display a colorbar if asked
     if colorbar:
         ax2 = fig.add_subplot(1, 10, 1)
@@ -659,5 +665,5 @@ def hexagonal_chart(
 
     #display off the axis
     ax.axis('off')
-
+    
     return fig
