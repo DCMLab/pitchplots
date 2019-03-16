@@ -1,226 +1,93 @@
+"""
+module that has to read what is given to the plotting functions
+"""
 import pandas as pd
-from pitchplots.functions import check_tpc, check_pc, check_duration, get_acc, get_step, get_pc
+from pitchplots.functions import get_acc, get_step, get_pc
 
-def get_df_columns(location, min_note=20): # depreciate
-    """Read a given file and put in a DataFrame the number of the column correspondant to the data_type
-
-    Keyword arguments:
-    location -- the absolute path to the .csv file containing the data
-    min_note -- the minimum number of notes in the datas, can be set to 0, but useful for reading the file
-    Return:
-    return a small DataFrame with the columns of the tpc, pc and duration values if they exist
-    """
-    df_data = pd.read_csv(location)
-
-    #booleans of he finds the tpc pc and duration values
-    col_tpc = False
-    col_duration = False
-    col_pc = False
-
-    columns = ['tpc', 'pc', 'duration']
-    df_ret_col = pd.DataFrame(columns=columns)
-
-    #if columns are already named correctly i read them automatically (not needed for the moment) 
-    #if df_data.columns.isin(['tpc']).any() and df_data.columns.isin(['pitch_class']).any() and df_data.columns.isin(['duration']).any():
-    #    for i in range(df_data.shape[1]):
-    #        if df_data.columns[i] == 'tpc':
-    #            df_ret_col.at[0, 'tpc'] = i
-    #        if df_data.columns[i] == 'pitch_class':
-    #            df_ret_col.at[0, 'pc'] = i
-    #        if df_data.columns[i] == 'duration':
-    #            df_ret_col.at[0, 'duration'] = i
-    #    return df_ret_col
-    
-    #read every columns
-    for i in range(df_data.shape[1]):
-
-        if df_data[df_data.columns[i]].dropna().shape[0] > min_note:
-            #no error detected for pc
-            if df_data[df_data.columns[i]].dropna().apply(check_pc).all() == True:
-                col_pc = True
-                df_ret_col.at[0, 'pc'] = i
-                
-            #no error detected for tpc
-            if df_data[df_data.columns[i]].dropna().apply(check_tpc).all() == True and col_tpc == False:
-                col_tpc = True
-                df_ret_col.at[0, 'tpc'] = i
-
-            #no error detected for duration
-            if df_data[df_data.columns[i]].dropna().apply(check_duration).all() == True and col_duration == False:
-                col_duration = True
-                df_ret_col.at[0, 'duration'] = i
-
-            #if he finds them all he breaks
-            if col_pc and col_tpc and col_duration:
-                break
-
-    return df_ret_col
-
-#========================================================================================================
-def get_df_long(location, data_type='tpc'):
-    """return the important complete columns of the Dataframe of the piece 
-
-    Keyword arguments:
-    location -- the absolute path to the .csv file containing the data
-    data_type -- tell the program to read primarily the tpc or pc values
-    Return:
-    return every notes with their durations and pc and tpc values (step, acc)
-    """
-    if isinstance(location, pd.DataFrame):
-        df_data = location
-    else:
-        df_data =  pd.read_csv(location)
-    
-    #if columns are already named correctly read them automatically
-        
-    columns = ['tpc', 'pc', 'duration']
-    df_col = pd.DataFrame(columns=columns)
-    
-    for i in range(df_data.shape[1]):
-        if df_data.columns[i] == 'tpc':
-            df_col.at[0, 'tpc'] = i
-        if df_data.columns[i] == 'pitch_class':
-            df_col.at[0, 'pc'] = i
-        if df_data.columns[i] == 'duration':
-            df_col.at[0, 'duration'] = i
-
-    #df_col = get_df_columns(location) depreciate
-        
-    df_ret_data = pd.DataFrame()
-
-    if pd.isnull(df_col.at[0, 'tpc']) == False and data_type == 'tpc':
-        df_ret_data['tpc'] = pd.Series(df_data.iloc[:, df_col.at[0, 'tpc']])
-        
-        #add the sup column
-        df_ret_data['sup'] = df_ret_data['tpc'].apply(get_acc)
-
-        #keep only the step from tpc
-        df_ret_data['tpc'] = df_ret_data['tpc'].apply(get_step)
-
-        #check if the columns exist for duration
-        if isinstance(df_col.at[0, 'duration'], int):
-            df_ret_data['duration'] = pd.Series(df_data.iloc[:, df_col.at[0, 'duration']])
-
-    if pd.isnull(df_col.at[0, 'pc']) == False and data_type == 'pc':
-        df_ret_data['pc'] = pd.Series(df_data.iloc[:, df_col.at[0, 'pc']])
-        
-        #check if the columns exist for duration
-        if isinstance(df_col.at[0, 'duration'], int):
-            df_ret_data['duration'] = pd.Series(df_data.iloc[:, df_col.at[0, 'duration']])
-
-    return df_ret_data
-
-#=========================================================================================================
 def get_df_short(
-    location,
-    convert_table=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
-    data_type='tpc',
-    set_measures=None):
+    piece,
+    vocabulary={0:'C', 1:'Db', 2:'D', 3:'Eb', 4:'E', 5:'F', 6:'Gb', 7:'G', 8:'Ab', 9:'A', 10:'Bb', 11:'B'},
+    pitch_type='tpc',
+    duration=False,
+    measures=None):
     """return a Dataframe with the condenced information about the piece for static plots
 
     Function:
     Get a file columns and read it to create a dataFrame with the following informations:
         pitch class value('pc'), number of appearences('nb'), total duration of the note('duration'),
-        tpc format note('tpc'), sharps and flats('sup')
+        tpc format note('tpc'), sharps and flats('acc')
     Keyword arguments:
-    location -- the absolute path to the .csv file containing the data
-    data_type -- the type of data that contains the file (default 'tpc')
+    piece -- the absolute path to the .csv file containing the data
+    pitch_type -- the type of data that contains the file (default 'tpc')
         (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
-    convert_table -- the conversion table from pitch class to tpc(F#, A, ...) format,
+    vocabulary -- the conversion table from pitch class to tpc(F#, A, ...) format,
         the position indicate the pitch class value (default [C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B])
-    """
-    if isinstance(location, pd.DataFrame):
-        df_data = location
+    measures -- give a set of measures example [5, 18], will display the notes of the measures 5 to 18 included
+    """ 
+    #check if it is a path to .csv or a DataFrame
+    if isinstance(piece, pd.DataFrame):
+        df_data = piece.copy()
     else:
-        df_data =  pd.read_csv(location)
+        df_data =  pd.read_csv(piece)
+    
+    #the column with the pc values is called pitch_class so it rename it to 'pc'
+    if 'pitch_class' in df_data.columns:
+        df_data.rename(columns={'pitch_class': 'pc'}, inplace=True)
         
-    if type(set_measures) is list: # need raise error if no measure_no column
-        df_data.drop(df_data[df_data.measure_no < set_measures[0]].index, inplace=True)
-        df_data.drop(df_data[df_data.measure_no > set_measures[1]].index, inplace=True)
+    if type(measures) is list:
+        df_data.drop(df_data[df_data.measure_no < measures[0]].index, inplace=True)
+        df_data.drop(df_data[df_data.measure_no > measures[1]].index, inplace=True)
         df_data.reset_index(drop=True, inplace=True)
     
-    #if columns are already named correctly read them automatically
-    columns = ['tpc', 'pc', 'duration']
-    df_col = pd.DataFrame(columns=columns)
-    
-    for i in range(df_data.shape[1]):
-        if df_data.columns[i] == 'tpc':
-            df_col.at[0, 'tpc'] = i
-        if df_data.columns[i] == 'pitch_class':
-            df_col.at[0, 'pc'] = i
-        if df_data.columns[i] == 'duration':
-            df_col.at[0, 'duration'] = i
-
-    #df_col = get_df_columns(location) depreciate
-
-    #read with priority to tpc values
-    if pd.isnull(df_col.at[0, 'tpc']) == False and data_type == 'tpc':
-        s_tpc = df_data.iloc[:, df_col.at[0, 'tpc']]
-        s_tpc = s_tpc.groupby(s_tpc).size()
-
-        #the most current note first
-        s_tpc.sort_values(inplace=True, ascending=False)
-
-        df_tpc = pd.DataFrame(s_tpc)
-        df_tpc.columns = ['nb']
-        df_tpc.reset_index(inplace=True)
-        df_tpc.columns = ['tpc', 'nb']
-
-        #add the duration column
-        if pd.isnull(df_col.at[0, 'duration']) == False:
-            df_duration = pd.concat([
-                    df_data[df_data.columns[df_col.at[0, 'tpc']]],
-                    df_data[df_data.columns[df_col.at[0, 'duration']]]],
-                axis=1,
-                keys=['tpc', 'duration'])
-            df_duration = (df_duration.groupby('tpc')).sum()
-            df_tpc = pd.merge(df_tpc, df_duration, on=['tpc', 'tpc'])
-
+    #If pitch_type is "tpc" we get a small DataFrame with the the columns:
+    #   tpc, nb, duration (if exist), pc, acc, step
+    if 'tpc' in df_data.columns and pitch_type == 'tpc':
+        s_tpc = df_data['tpc'].groupby(df_data['tpc']).size()
+        if not duration:
+            s_tpc.sort_values(inplace=True, ascending=False)
+        df_tpc = pd.DataFrame({'tpc':s_tpc.index, 'nb':s_tpc.values})
+        if 'duration' in df_data.columns:
+            df_duration = pd.DataFrame(df_data.groupby('tpc').duration.sum())
+            df_tpc = pd.merge(df_tpc, df_duration, on='tpc')
+            if duration:
+                df_tpc.sort_values('duration', inplace=True, ascending=False)
+            
         #get the pc values from tpc
         df_tpc['pc'] = df_tpc['tpc'].apply(get_pc)
         
         #add the sup column
-        df_tpc['sup'] = df_tpc['tpc'].apply(get_acc)
-
-        #keep only the step from tpc
-        df_tpc['tpc'] = df_tpc['tpc'].apply(get_step)
+        df_tpc['acc'] = df_tpc['tpc'].apply(get_acc)
+        
+        df_tpc['step'] = df_tpc['tpc'].apply(get_step)
         
         return df_tpc
-
-    #read with priority to pc values
-    if pd.isnull(df_col.at[0, 'pc']) == False and data_type == 'pc':
-        s_pc = df_data.iloc[:, df_col.at[0, 'pc']]
-        s_pc = s_pc.groupby(s_pc).size()
-
-        #the most current note first
-        s_pc.sort_values(inplace=True, ascending=False)
-
-        df_pc = pd.DataFrame(s_pc)
-        df_pc.columns = ['nb']
-        df_pc.reset_index(inplace=True)
-        df_pc.columns = ['pc', 'nb']
+    
+    #If pitch_type is "pc" we get a small DataFrame with the the columns:
+    #   pc, nb, duration (if exist), tpc(from vocabulary), acc, step
+    if 'pc' in df_data.columns and pitch_type == 'pc':
+        s_pc = df_data['pc'].groupby(df_data['pc']).size()
+        if not duration:
+            s_pc.sort_values(inplace=True, ascending=False)
+        df_pc = pd.DataFrame({'pc':s_pc.index, 'nb':s_pc.values})
 
         #add the duration column
-        if pd.isnull(df_col.at[0, 'duration']) == False:
-            df_duration = pd.concat([
-                    df_data[df_data.columns[df_col.at[0, 'pc']]],
-                    df_data[df_data.columns[df_col.at[0, 'duration']]]],
-                axis=1,
-                keys=['pc', 'duration'])
-            df_duration = (df_duration.groupby('pc')).sum()
-            df_pc = pd.merge(df_pc, df_duration, on=['pc', 'pc'])
-
+        if 'duration' in df_data.columns:
+            df_duration = pd.DataFrame(df_data.groupby('pc').duration.sum())
+            df_pc = pd.merge(df_pc, df_duration, on='pc')
+            if duration:
+                df_pc.sort_values('duration', inplace=True, ascending=False)
+            
         #add the tpc column
         s_tpc_pc = []
         for i in range(df_pc.shape[0]):
-            s_tpc_pc.append(convert_table[int(df_pc.at[i, 'pc'])])
+            s_tpc_pc.append(vocabulary[int(df_pc.at[i, 'pc'])])
 
         df_pc['tpc'] = pd.Series(s_tpc_pc)
 
         #add the sup column
-        df_pc['sup'] = df_pc['tpc'].apply(get_acc)
+        df_pc['acc'] = df_pc['tpc'].apply(get_acc)
 
         #keep only the step from tpc
-        df_pc['tpc'] = df_pc['tpc'].apply(get_step)
+        df_pc['step'] = df_pc['tpc'].apply(get_step)
 
         return df_pc

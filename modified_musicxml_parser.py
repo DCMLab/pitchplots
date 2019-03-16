@@ -11,6 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Modified for the needs of the pitchplots library
+# All modifications can be seen at:
+# https://github.com/DCMLab/pitchplots/blob/master/magenta_musicxml_code_modifications.md
+# a copy of the LICENCE can be seen at
+# https://github.com/DCMLab/pitchplots/blob/master/magenta_LICENSE.md
+# original code can be found at
+# https://github.com/tensorflow/magenta/blob/master/magenta/music/musicxml_parser.py
+
 
 """MusicXML parser.
 Simple MusicXML parser used to convert MusicXML
