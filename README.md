@@ -41,8 +41,8 @@ pip install pitchplots
 ![4](images/Tp4_def_pie.png)  ![5](images/Tp5_red_pie_nofifith.png)  ![6](images/Tp6_log_pie.png)
 
 **Pitchplots** has currently two plotting functions
--   `hexagonal_chart` uses a `.csv` file or a pandas DataFrame of a piece of music to do a hexagonal 2D representation ("Tonnetz").
--   `pie_chart` uses a csv file or a pandas DataFrame of a piece of music to represent the notes by fifth or chromatic.
+-   `tonnetz` uses a `.csv` file or a pandas DataFrame of a piece of music to do a hexagonal 2D representation ("Tonnetz").
+-   `circle` uses a csv file or a pandas DataFrame of a piece of music to represent the notes by fifth or chromatic.
 and one function to parse (compressed) MusicXML files
 -   `xml_to_csv` uses a `.mxl` or `.xml` file and parses it into a `.csv` file using the [TensorFlow Magenta](https://github.com/tensorflow/magenta) `musicxml_parser.py`.
 
@@ -70,13 +70,13 @@ In order to plot the notes of a piece, import the `pitchplots.static` module and
 ```python
 import pitchplots.static as pps
 
-pps.hexagonal_chart(df_data_example)
+pps.tonnetz(df_data_example)
 ```
  or a CSV file:
 ```python
 import pitchplots.static as pps
 
-pps.hexagonal_chart('csv/data_example.csv')
+pps.tonnetz('csv/data_example.csv')
 ```
 In both cases the output should look like the following image (of course, the note distribution depends on the piece you are plotting):
 
