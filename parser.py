@@ -17,12 +17,13 @@ class ParseError(Exception):
     pass
 
 ### DEFINE PARSER
-def xml_to_csv(filepath, filename=None, save_csv=True):
+def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_example.mxl',
+               filename=None, save_csv=True):
     """return the Dataframe, and possbily register it in csv, of the musicxml file
     
     Keyword arguments:
-    filepath -- absolute path to the xml file
-    filename -- give the name of the .csv file
+    filepath -- absolute path to the xml file by default goes to the example file
+    filename -- give the name of the .csv file, by default give the same name as the .mxl file
     save_cvs -- if True save the csv file in the csv directory or at the given path
     """
     columns = ['filepath', # piece ID or something (TODO)
@@ -146,53 +147,22 @@ def xml_to_csv(filepath, filename=None, save_csv=True):
                 df = df.append(row, ignore_index=True)
     
     if save_csv:
-        csv_path = os.path.dirname(sys.argv[0])+r'/csv' #  path to the csv directory
-        if pd.isnull(filename): # get the name from the xml file and put in csv dir
+        #  path to the csv directory
+        csv_path = os.path.dirname(sys.argv[0])+r'/csv'
+        # get the name from the xml file and put in csv dir
+        if pd.isnull(filename):
             if not os.path.exists(csv_path):
                 os.makedirs(csv_path)
             filename = os.path.basename(filepath).split('.')[0] + '.csv'
             df.to_csv(os.path.join(csv_path,filename), sep=',')
-        elif "\\" in filename or "/" in filename: # put it in the given absolute path
+        # if filename is a path, register the csv file at the given path
+        elif "\\" in filename or "/" in filename:
             df.to_csv(filename, sep=',')
-        else: # get the name and put it in csv dir
+        # get the name and put it in csv folder
+        else:
+            # check if the csv folder already exist if not create one
             if not os.path.exists(csv_path):
                 os.makedirs(csv_path)
             df.to_csv(os.path.join(csv_path,filename), sep=',')
 
-    return df
-
-# a reduced version of the parser for time os.pathtimization
-def xml_to_csv_reduce(filepath):
-
-    columns = ['measure_no', # number of measure
-               'tpc', # tonal pitch class: note name w/o octave, e.g. C, F#...
-               'pitch_class', # pitch modulo 12
-               'duration', # note duration in beats as float (i.e. a quarter note is 0.25)
-              ]
-
-    parsed = MusicXMLDocument(filepath)
-    df = pd.DataFrame(columns=columns)
-
-    for part in parsed.parts:
-        measure_no = 0
-        for measure in part.measures:
-            measure_no += 1
-            
-            for note in measure.notes:
-                if note.pitch is not None:
-                    note_name = note.pitch[0]
-                    tpc = note_name[:-1]
-                    pitch_class = int(note.pitch[1] % 12)
-                else:
-                    tpc = np.nan
-                    pitch_class = np.nan
-                duration =  note.note_duration.duration_float()
-
-                # final list of of the columns of the dataframe
-                values = [measure_no,
-                          tpc,
-                          pitch_class,
-                          duration]
-                row = dict(zip(columns, values))
-                df = df.append(row, ignore_index=True)
     return df

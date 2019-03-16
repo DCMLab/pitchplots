@@ -1,39 +1,20 @@
+"""
+stack of functions for the program
+"""
 import numpy as np
 import pandas as pd
 
-# =============================================================================
-# def check_pie_chart_inputs():
-#     if data_type != 'tpc' and data_type!='pc':
-#         raise TypeError('data_type must be "pc" or "tpc"')
-# =============================================================================
-
 def get_dic_nei(pitch_class_display):
-    """for musical_plot_hex it need the neighbouring notes in the hexagonal shape, return dictionary"""
+    """for musical_plot_hex it need the neighbouring notes in the hexagonal shape, return dictionary
+        ref is the list of note that we are refering to
+        pos is the position of the neighbouring note that we want to know
+        note is the note at the position from the refering note
+        sup is the accidental of the note at the given position
+    """
     if pitch_class_display:
-        dic_nei = {'ref':[0, 0, 0, 0, 0, 0,
-                          1, 1, 1, 1, 1, 1,
-                          2, 2, 2, 2, 2, 2,
-                          3, 3, 3, 3, 3, 3,
-                          4, 4, 4, 4, 4, 4,
-                          5, 5, 5, 5, 5, 5,
-                          6, 6, 6, 6, 6, 6,
-                          7, 7, 7, 7, 7, 7,
-                          8, 8, 8, 8, 8, 8,
-                          9, 9, 9, 9, 9, 9,
-                          10, 10, 10, 10, 10, 10,
-                          11, 11, 11, 11, 11, 11],
-                 'pos': [(1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1)],
+        # for every note there is a row 
+        dic_nei = {'ref':[i for sublist in [[i]*6 for i in range(12)] for i in sublist],
+                 'pos': [(1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1)]*12,
                  'note': [4, 7, 3, 8, 5, 9,
                           5, 8, 4, 9, 6, 10,
                           6, 9, 5, 10, 7, 11,
@@ -47,20 +28,8 @@ def get_dic_nei(pitch_class_display):
                           2, 5, 1, 6, 3, 7,
                           3, 6, 2, 7, 4, 8]}
     else:
-        dic_nei = {'ref':['F', 'F', 'F', 'F', 'F', 'F',
-                          'C', 'C', 'C', 'C', 'C', 'C',
-                          'G', 'G', 'G', 'G', 'G', 'G',
-                          'D', 'D', 'D', 'D', 'D', 'D',
-                          'A', 'A', 'A', 'A', 'A', 'A',
-                          'E', 'E', 'E', 'E', 'E', 'E',
-                          'B', 'B', 'B', 'B', 'B', 'B'],
-                 'pos': [(1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1),
-                         (1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1)],
+        dic_nei = {'ref':[c for sublist in [[c]*6 for c in 'FCGDAEB'] for c in sublist],
+                 'pos': [(1,0,-1), (1,-1,0), (0,-1,1), (-1,0,1), (-1,1,0), (0,1,-1)]*7,
                  'note': ['A', 'C', 'A', 'D', 'B', 'D',
                           'E', 'G', 'E', 'A', 'F', 'A',
                           'B', 'D', 'B', 'E', 'C', 'E',
@@ -68,7 +37,7 @@ def get_dic_nei(pitch_class_display):
                           'C', 'E', 'C', 'F', 'D', 'F',
                           'G', 'B', 'G', 'C', 'A', 'C',
                           'D', 'F', 'D', 'G', 'E', 'G'],
-                 'sup': [0, 0, -1, -1, -1, 0,
+                 'acc': [0, 0, -1, -1, -1, 0,
                          0, 0, -1, -1, 0, 0,
                          0, 0, -1, -1, 0, 0,
                          1, 0, 0, -1, 0, 0,
@@ -77,9 +46,9 @@ def get_dic_nei(pitch_class_display):
                          1, 1, 0, 0, 0, 1]}
     return dic_nei
 
-def put_flat_sharp(note, acc):
+def put_flat_sharp(step, acc):
     """get a step and its acc and return the note in tpc notation, return str"""
-    ret_note = note
+    ret_note = step # not needed
     ret_acc = acc
     
     #put the flats and sharps
@@ -90,9 +59,9 @@ def put_flat_sharp(note, acc):
         ret_acc = abs(ret_acc)
         for l in range(ret_acc):
             ret_note = ret_note + 'b'
-    return ret_note
+    return ret_note # not needed
 
-def check_tpc(note):
+def is_tpc(note):
     """check if note has the same format as tpc, return boolean"""
     s_tpc_values_1 = pd.Series(['F', 'C', 'G', 'D', 'A', 'E', 'B'])
     s_tpc_values_2 = pd.Series(['b', '#'])
@@ -116,47 +85,27 @@ def check_tpc(note):
             break
     return correct_format_tpc
 
-def check_pc(note):
+def is_pc(note):
     """check if note has the same format as pc, return boolean"""
-    s_pc_values = pd.Series([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
-    correct_format_pc = True
-
-    if isinstance(note, int) or isinstance(note, float):
-        if (note == s_pc_values).any() == False:
-            correct_format_pc = False
-    else:
-        correct_format_pc = False
-        
-    return correct_format_pc
-
-def check_duration(note):
-    """check if note has the same format as duration, return bolean"""
-    correct_format_duration = True
-
-    if isinstance(note, int) or isinstance(note, float):
-        if note <= 0 or note > 4:
-            correct_format_duration = False
-    else:
-        correct_format_duration = False
-        
-    return correct_format_duration
+    return note in range(12)
 
 def get_acc(note):
     """get the acc from a tpc format, return int"""
-    acc = 0
-    for i in str(note):
-        if i == '#':
-            acc = acc + 1
-        if i == 'b':
-            acc = acc - 1
-    return acc
+    if is_tpc(note):
+        acc = 0
+        for i in str(note):
+            if i == '#':
+                acc = acc + 1
+            if i == 'b':
+                acc = acc - 1
+        return acc
 
 def get_step(note):
     """get the step from a tpc format, return str"""
-    step = np.NaN
-    if pd.isnull(note) == False:
+    if is_tpc(note):
+        step = ''
         step = str(note)[0]
-    return step
+        return step
 
 def get_pc(note):
     """get the pitch class from a tpc value, return int"""
@@ -165,30 +114,26 @@ def get_pc(note):
     if pd.isnull(note) == False:
         pc = s_tpc_pc.at[get_step(note)]
         pc = pc + get_acc(note)
+        ###heck modulo
         while pc < 0:
             pc = pc + 12
         while pc > 11:
             pc = pc - 12
     return pc
 
-def get_fifth_nb(note, acc):
+def get_fifth_nb(note):
     """return the position of the note in the fifth line"""
-    ret_nb = 0
-    if note == 'F': ret_nb = 0
-    if note == 'C': ret_nb = 1
-    if note == 'G': ret_nb = 2
-    if note == 'D': ret_nb = 3
-    if note == 'A': ret_nb = 4
-    if note == 'E': ret_nb = 5
-    if note == 'B': ret_nb = 6
-    ret_nb = ret_nb + acc * 7
-    return ret_nb
+    step = get_step(note)
+    acc = get_acc(note)
+    dic = {'F':0, 'C':1, 'G':2, 'D':3, 'A':4, 'E':5, 'B':6}
+    return dic[step] + acc * 7
 
+#change note to fifth_number Use same dictionnary
 def get_fifth_note(note):
     """return the note after the fifth number"""
     count = 0
     ret_note = 0
-    copy_note = int(note.copy())
+    copy_note = int(note)
     while copy_note < 0 or copy_note > 6:
         if copy_note < 0:
             copy_note = copy_note + 7
@@ -205,4 +150,3 @@ def get_fifth_note(note):
     if copy_note == 6: ret_note = 'B'
     ret_note = put_flat_sharp(ret_note, count)
     return ret_note
-
