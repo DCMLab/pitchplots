@@ -77,7 +77,8 @@ def circle(
     rotation=0,
     clockwise=True,
     cmap='Blues',
-    nan_color=None):
+    nan_color=None,
+    **kwargs):
     """return the figure of a piechart with importance of the notes that are represented by the colour as a heatmap
 
     Keyword arguments:
@@ -97,6 +98,8 @@ def circle(
     clockwise -- if True the piechart is displayed clockwise if not counter-clockwise
     cmap -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
     nan_color -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
+    **kwargs -- these arguments are redirected to the matplotlib.pyplot.pie function, see informations at
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.pie.html
     """
                 
     #settings
@@ -266,7 +269,7 @@ def circle(
         df_tpc_pie.index = df_tpc_pie['note']
         
         #do the pie chart
-        ax.pie(labels=df_tpc_pie.index, x=df_tpc_pie['part'], colors=color_note, startangle=rotation)
+        ax.pie(labels=df_tpc_pie.index, x=df_tpc_pie['part'], colors=color_note, startangle=rotation, **kwargs)
 
         #if asked plot the colorbar left of the piechart
         if colorbar:
@@ -322,7 +325,7 @@ def circle(
                     rotation = rotation + 75 - i * 30
                     break
 
-        ax.pie(labels=s_twelve_ones.index, x=s_twelve_ones, colors=color_note, startangle=rotation)
+        ax.pie(labels=s_twelve_ones.index, x=s_twelve_ones, colors=color_note, startangle=rotation, **kwargs)
 
         #if asked plot the colorbar left of the piechart
         if colorbar:
@@ -351,7 +354,9 @@ def tonnetz(
     figsize=[14,9],
     cmap='Blues',
     nan_color=None,
-    center=None):
+    edgecolor=None,
+    center=None,
+    **kwargs):
     """return the figure of a 2D grid of hexagons, each hexagons being a note
 
     Keyword arguments:
@@ -373,6 +378,8 @@ def tonnetz(
     nan_color -- give the possibility to set a color for the note that do not appear in the piece (default None)
     center -- you can set the note that will be in the center of the grid,
         by default it put the most recurent note in the center (default None)
+    **kwargs -- these arguments are redirected to matplotlib.patches.RegularPolygon, see informations at
+                https://matplotlib.org/api/_as_gen/matplotlib.patches.RegularPolygon.html
     """
     #===================================================================================
     #constant, parameter, variables
@@ -440,7 +447,7 @@ def tonnetz(
     #if not define it takes the most current note
     if pd.isnull(center):
         #draw the hexagon
-        p = patches.RegularPolygon(center_pos, 6, radius=length, color=cmap(1/1))
+        p = patches.RegularPolygon(center_pos, 6, radius=length, color=cmap(1/1), **kwargs)
         
         if pitch_class_display:
             ax.text(
@@ -516,14 +523,17 @@ def tonnetz(
             
         if pitch_class_display == False:
             a_center[0] = put_flat_sharp(a_center[0], a_center[1])
-
+            
+        if not edgecolor:
+            edgecolor = color
         #draw and add labels
         p = patches.RegularPolygon(
             center_pos,
             6,
             radius=length,
             facecolor=color,
-            edgecolor='Black')
+            edgecolor=edgecolor,
+            **kwargs)
         if pitch_class_display:
             ax.text(
                 center_pos[0],
@@ -650,12 +660,15 @@ def tonnetz(
 
                     #draw
                     if show_hex:
+                        if not edgecolor:
+                            edgecolor = color
                         p = patches.RegularPolygon(
                             center_pos,
                             6,
                             radius=length,
                             facecolor=color,
-                            edgecolor='Black')
+                            edgecolor=edgecolor,
+                            **kwargs)
                         if pitch_class_display:
                             ax.text(
                                 center_pos[0],
