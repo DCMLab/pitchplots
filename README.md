@@ -80,9 +80,31 @@ pps.tonnetz('csv/data_example.csv')
 ```
 In both cases the output should look like the following image (of course, the note distribution depends on the piece you are plotting):
 
-![hex_example](images/Tp1_def_hex.png)
+![tonnetz_example](images/Tp1_def_hex.png)
 
-A more detailed overview about the functionality of the plotting functions is given in the notebooks [documentation_hexagonal_chart.ipynb](documentation_hexagonal_chart.ipynb) for information on `hexagonal_chart` and [documentation_pie_chart.ipynb](documentation_pie_chart.ipynb) for information on `pie_chart information`.
+Or if you want to plot a circle:
+
+```python
+import pitchplots.static as pps
+
+pps.circle(df_data_example)
+```
+ or a CSV file:
+```python
+import pitchplots.static as pps
+
+pps.circle('csv/data_example.csv')
+```
+In both cases the output should look like the following image (of course, the note distribution depends on the piece you are plotting):
+
+![circle_example](images/Tp4_def_pie.png)
+
+## detailed functionality
+
+see the following files for more informations about the functions circle and tonnetz.
+
+[circle documentation](circle_doc.ipynb)
+[tonnetz documentation](tonnetz_doc.ipynb)
 
 ## Further Information
 ### Authors
