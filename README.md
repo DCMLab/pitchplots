@@ -113,8 +113,8 @@ see the following files for more informations about the functions circle and ton
 
 ### Usage of Magenta's code
 
-The [modified_musicxml_parser.py](modified_musicxml_parser.py) file is taken from the [TensorFlow Magenta](https://github.com/tensorflow/magenta) project and has been modified. See the [modifications](magenta_musicxml_code_modifications.md) and the [Magenta License](magenta_LICENSE.md).
+The [modified_musicxml_parser.py](modified_musicxml_parser.py) file is taken from the [TensorFlow Magenta](https://github.com/tensorflow/magenta) project and has been modified. See the [modifications](magenta/magenta_musicxml_code_modifications.md) and the [Magenta License](magenta/magenta_LICENSE.md).
 
 ### License
 
-Pitchplots is licensed under the MIT License - see [LICENSE.md](LICENSE.md) file for details
+Pitchplots is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details

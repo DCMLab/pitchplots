@@ -17,10 +17,10 @@ class ParseError(Exception):
     pass
 
 ### DEFINE PARSER
-def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_example.mxl',
+def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data' + '\\' + 'data_example.mxl',
                filename=None, save_csv=True):
     """return the Dataframe, and possbily register it in csv, of the musicxml file
-    
+
     Keyword arguments:
     filepath -- absolute path to the xml file by default goes to the example file
     filename -- give the name of the .csv file, by default give the same name as the .mxl file
@@ -45,24 +45,24 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_e
                'duration', # note duration in beats as float (i.e. a quarter note is 0.25) ???? IS THIS CORRECT?
                'onset' # onset in seconds
               ]
-    
+
     #add of these variables for control
     key_signature_on = False
     time_signature_on = False
     qpm_on = False
-    
+
     try:
         parsed = MusicXMLDocument(filepath)
     except:
         raise ParseError('There is a problem with the path to the xml/mxl file or the files are not standard.')
-    
+
     df = pd.DataFrame(columns=columns)
 
     for part in parsed.parts:
         measure_no = 0
         for measure in part.measures:
             measure_no += 1
-            
+
             #keep the previous key signature
             #because the key signature appears only if it changes
             if pd.isnull(measure.key_signature) == False:
@@ -74,7 +74,7 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_e
                 root = np.nan
                 mode = np.nan
                 key_area = np.nan
-            
+
             #adding of the time_signature like the key_signature
             if pd.isnull(measure.time_signature) == False:
                 time_signature_on = True
@@ -83,14 +83,14 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_e
             elif time_signature_on == False:
                 time_sign_num = np.nan
                 time_sign_den = np.nan
-            
+
             #adding of qpm
             if pd.isnull(measure.state.qpm) == False:
                 qpm_on = True
                 qpm = measure.state.qpm
             elif qpm_on == False:
                 qpm = np.nan
-            
+
             for note in measure.notes:
                 if note.is_rest:
                     ntype = 'rest'
@@ -145,7 +145,7 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_e
                           onset]
                 row = dict(zip(columns, values))
                 df = df.append(row, ignore_index=True)
-    
+
     if save_csv:
         #  path to the csv directory
         csv_path = os.path.dirname(sys.argv[0])+r'/csv'
