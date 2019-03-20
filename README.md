@@ -99,6 +99,28 @@ In both cases the output should look like the following image (of course, the no
 
 ![circle_example](images/Tp4_def_pie.png)
 
+### Animations
+
+In order to create an animated plot of a piece, import the `pitchplots.dynamic` module and use its plotting function. It takes as input the output of the parser, i.e. either a DataFrame object:
+
+```python
+import pitchplots.dynamic as ppd
+
+# the example takes only the measures 1 to 4 because the function can take some time for a long video
+pps.tonnetz_animation(df_data_example, measures=[1, 4])
+```
+ or a CSV file:
+```python
+import pitchplots.static as pps
+
+# the example takes only the measures 1 to 4 because the function can take some time for a long video
+pps.tonnetz('csv/data_example.csv', measures=[1, 4])
+```
+
+you can also save it as a gif by specifying `filename='animation.gif'`. By default it produces a `.mp4` file. The result should look like the gif below.
+
+![tonnetz_animation](images/tonnetz.gif)
+
 ## detailed functionality
 
 see the following files for more informations about the functions circle and tonnetz.
