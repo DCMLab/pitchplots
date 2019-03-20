@@ -2,7 +2,7 @@
 module that has to read what is given to the plotting functions
 """
 import pandas as pd
-from pitchplots.functions import get_acc, get_step, get_pc
+from pitchplots.functions import get_acc, get_step, get_pc, sampling
 
 def get_df_short(
     piece,
@@ -18,10 +18,11 @@ def get_df_short(
         tpc format note('tpc'), sharps and flats('acc')
     Keyword arguments:
     piece -- the absolute path to the .csv file containing the data
-    pitch_type -- the type of data that contains the file (default 'tpc')
-        (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
     vocabulary -- the conversion table from pitch class to tpc(F#, A, ...) format,
         the position indicate the pitch class value (default [C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B])
+    pitch_type -- the type of data that contains the file (default 'tpc')
+        (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
+    duration -- tell him if he has to class the notes by their total duration or their number of appearance
     measures -- give a set of measures example [5, 18], will display the notes of the measures 5 to 18 included
     """ 
     #check if it is a path to .csv or a DataFrame
@@ -91,3 +92,59 @@ def get_df_short(
         df_pc['step'] = df_pc['tpc'].apply(get_step)
 
         return df_pc
+    
+def get_df_long(
+        piece,
+        vocabulary={0:'C', 1:'Db', 2:'D', 3:'Eb', 4:'E', 5:'F', 6:'Gb', 7:'G', 8:'Ab', 9:'A', 10:'Bb', 11:'B'},
+        pitch_type='tpc',
+        measures=None,
+        sampling_frequency=50,
+        speed_ratio=1):
+    """get the whole columns 
+    need a column 'onset_seconds' that is the onset but in seconds
+    Keyword arguments:
+    piece -- the absolute path to the .csv file containing the data
+    vocabulary -- the conversion table from pitch class to tpc(F#, A, ...) format,
+        the position indicate the pitch class value (default [C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B])
+    pitch_type -- the type of data that contains the file (default 'tpc')
+        (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
+    measures -- give a set of measures example [5, 18], will display the notes of the measures 5 to 18 included
+    sampling_frequency -- the frequency of lecture of the piece, also correspond to the fps of the video
+    speed_ratio -- set the speed at which the video is read, for example : 2 accelerate the speed of the video by 2
+    """ 
+    if isinstance(piece, pd.DataFrame):
+        df_data = piece.copy()
+    else:
+        df_data =  pd.read_csv(piece)
+    
+    if 'type' in df_data.columns:
+        df_data.drop(df_data[df_data.type == 'rest'].index, inplace=True)
+    
+    #the column with the pc values is called pitch_class so it rename it to 'pc'
+    if 'pitch_class' in df_data.columns:
+        df_data.rename(columns={'pitch_class': 'pc'}, inplace=True)
+        
+    if type(measures) is list:
+        df_data.drop(df_data[df_data.measure_no < measures[0]].index, inplace=True)
+        df_data.drop(df_data[df_data.measure_no > measures[1]].index, inplace=True)
+        df_data.reset_index(drop=True, inplace=True)
+        df_data['onset_seconds'] -= df_data['onset_seconds'].min()
+        
+    if 'tpc' in df_data.columns and pitch_type=='tpc':
+        if 'acc' not in df_data.columns:
+            df_data['acc'] = df_data['tpc'].apply(get_acc)
+        if 'step' not in df_data.columns:
+            df_data['step'] = df_data['tpc'].apply(get_step)
+    if 'pc' in df_data.columns and pitch_type=='pc':
+        if 'tpc' not in df_data.columns:
+            df_data['tpc'] = df_data.replace({"pc":vocabulary})
+        if 'acc' not in df_data.columns:
+            df_data['acc'] = df_data['tpc'].apply(get_acc)
+        if 'step' not in df_data.columns:
+            df_data['step'] = df_data['tpc'].apply(get_step)
+            
+    df_data.sort_values('onset_seconds', inplace = True)
+    df_data['onset_seconds'] *= (1/speed_ratio)
+    df_data['onset_seconds'] = df_data['onset_seconds'].apply(sampling, sampling_frequency=sampling_frequency)
+    df_data.reset_index(inplace=True)
+    return df_data
