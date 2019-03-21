@@ -18,6 +18,7 @@ class ParseError(Exception):
 
 ### DEFINE PARSER
 def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_example.mxl',
+def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_example.mxl',
                filename=None, save_csv=True, duration='whole_note'):
     """return the Dataframe, and possbily register it in csv, of the musicxml file
     
