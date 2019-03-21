@@ -111,7 +111,7 @@ pps.tonnetz_animation(df_data_example, measures=[1, 4])
 ```
  or a CSV file:
 ```python
-import pitchplots.static as pps
+import pitchplots.dynamic as ppd
 
 # the example takes only the measures 1 to 4 because the function can take some time for a long video
 pps.tonnetz('csv/data_example.csv', measures=[1, 4])
