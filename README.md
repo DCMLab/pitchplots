@@ -114,7 +114,7 @@ pps.tonnetz_animation(df_data_example, measures=[1, 4])
 import pitchplots.dynamic as ppd
 
 # the example takes only the measures 1 to 4 because the function can take some time for a long video
-pps.tonnetz('csv/data_example.csv', measures=[1, 4])
+ppd.tonnetz_animation(df_data_example, measures=[1, 4])
 ```
 
 you can also save it as a gif by specifying `filename='animation.gif'`. By default it produces a `.mp4` file. The result should look like the gif below.
