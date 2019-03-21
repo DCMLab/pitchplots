@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/DCMLab/pitchplots",
     packages=setuptools.find_packages(),
     package_data={
-            'pitchplots': ['data_example.mxl'],
+'pitchplots': ['data/data_example.mxl'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
