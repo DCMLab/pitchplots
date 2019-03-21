@@ -46,6 +46,17 @@ def get_dic_nei(pitch_class_display):
                          1, 1, 0, 0, 0, 1]}
     return dic_nei
 
+def sampling(value, sampling_frequency):
+    """return the sampled value at a given sampling frequency"""
+    ret_value = 0
+    
+    if value%(1/sampling_frequency) <= (1/sampling_frequency)/2:
+        ret_value = value - (value%(1/sampling_frequency))
+    else:
+        ret_value = value - (value%(1/sampling_frequency)) + (1/sampling_frequency)
+        
+    return ret_value
+
 def put_flat_sharp(step, acc):
     """get a step and its acc and return the note in tpc notation, return str"""
     ret_note = step # not needed

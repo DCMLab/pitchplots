@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pitchplots",
-    version="0.0.16",
+    version="1.1.0",
     author="Fabian Moss",
     author_email="fabian.moss@epfl.ch",
     description="A package containing representation tools for musical purposes",
@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/DCMLab/pitchplots",
     packages=setuptools.find_packages(),
     package_data={
-        ':'pitchplots ['data_example.mxl'],
+'pitchplots': ['data/data_example.mxl'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -17,14 +17,17 @@ class ParseError(Exception):
     pass
 
 ### DEFINE PARSER
-def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data' + '\\' + 'data_example.mxl',
-               filename=None, save_csv=True):
+def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_example.mxl',
+def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data_example.mxl',
+               filename=None, save_csv=True, duration='whole_note'):
     """return the Dataframe, and possbily register it in csv, of the musicxml file
-
+    
     Keyword arguments:
     filepath -- absolute path to the xml file by default goes to the example file
     filename -- give the name of the .csv file, by default give the same name as the .mxl file
     save_cvs -- if True save the csv file in the csv directory or at the given path
+    duration -- define of the duration will be in seconds or relative to a whole note
+                (possible values: 'seconds' or 'whole_note'(default value))
     """
     columns = ['filepath', # piece ID or something (TODO)
                'qpm', #add qpm, the beat per minute
@@ -45,24 +48,24 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data' 
                'duration', # note duration in beats as float (i.e. a quarter note is 0.25) ???? IS THIS CORRECT?
                'onset' # onset in seconds
               ]
-
+    
     #add of these variables for control
     key_signature_on = False
     time_signature_on = False
     qpm_on = False
-
+    
     try:
         parsed = MusicXMLDocument(filepath)
     except:
         raise ParseError('There is a problem with the path to the xml/mxl file or the files are not standard.')
-
+    
     df = pd.DataFrame(columns=columns)
 
     for part in parsed.parts:
         measure_no = 0
         for measure in part.measures:
             measure_no += 1
-
+            
             #keep the previous key signature
             #because the key signature appears only if it changes
             if pd.isnull(measure.key_signature) == False:
@@ -74,7 +77,7 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data' 
                 root = np.nan
                 mode = np.nan
                 key_area = np.nan
-
+            
             #adding of the time_signature like the key_signature
             if pd.isnull(measure.time_signature) == False:
                 time_signature_on = True
@@ -83,14 +86,14 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data' 
             elif time_signature_on == False:
                 time_sign_num = np.nan
                 time_sign_den = np.nan
-
+            
             #adding of qpm
             if pd.isnull(measure.state.qpm) == False:
                 qpm_on = True
                 qpm = measure.state.qpm
             elif qpm_on == False:
                 qpm = np.nan
-
+            
             for note in measure.notes:
                 if note.is_rest:
                     ntype = 'rest'
@@ -145,7 +148,11 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data' 
                           onset]
                 row = dict(zip(columns, values))
                 df = df.append(row, ignore_index=True)
-
+    
+    # correct the onset to be quantized by the measure number
+    # add the 'onset_seconds' column from the new onset, for the dynamic plotting
+    df = data_onset_duration_corrector(df, duration)
+    
     if save_csv:
         #  path to the csv directory
         csv_path = os.path.dirname(sys.argv[0])+r'/csv'
@@ -166,3 +173,75 @@ def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data' 
             df.to_csv(os.path.join(csv_path,filename), sep=',')
 
     return df
+
+def data_onset_duration_corrector(data, duration):
+    """
+    corrects the duration and onset of the piece and normalize by the measure
+    
+    Keyword arguments:
+    data -- the pandas DataFrame of the piece
+    duration -- define of the duration will be in seconds or relative to a whole note
+                (possible values: 'seconds' or 'whole_note'(default value))
+    return:
+    ret_data -- the pandas DataFrame of the the correction of the piece
+    """
+    corr_data = data.copy()
+    
+    #get rid of notes and rests that have a 0 duration
+    #they are more likely falsely parsed notes from musicxml_parser
+    corr_data.drop(corr_data[corr_data.duration == 0].index, inplace=True)
+    
+    min_onset = 0
+    max_onset = 0
+    onset_ratio = 0
+    duration_ratio = 0
+    current_minimum_time = 0
+    time_ratio = 0
+    
+    #get rid of all the notes that have a zero duration
+    corr_data.drop(corr_data[corr_data.duration == 0].index, inplace=True)
+    
+    #group the notes by measure 
+    gb_mesure_no = corr_data.groupby('measure_no')
+    
+    ret_data = pd.DataFrame()
+    
+    for i in range(corr_data['measure_no'].max()):
+        df_group = gb_mesure_no.get_group(i+1)
+        
+        #assume that the onset_ratio is the same for the last and before last measure
+        if i != corr_data['measure_no'].max() - 1:
+            df_group_next = gb_mesure_no.get_group(i+1+1)
+            
+            #it is assumed that the first note of the measure begins at the start of the measure
+            min_onset = df_group['onset'].min()
+            max_onset = df_group_next['onset'].min()
+            onset_ratio = 1/(max_onset-min_onset)
+        
+        #set the onset like the first note start at the at the start of the onset
+        df_group['onset'] *= onset_ratio
+        df_group['onset'] += (i - df_group['onset'].min())
+        
+        #the time signature is the same for the whole measure
+        duration_ratio = df_group['time_sign_den'].iloc[0]/df_group['time_sign_num'].iloc[0]
+        
+        if duration =='seconds':
+            #so the duration is equal to the number of seconds of the quatized note
+            df_group['duration'] *= (4*60)/df_group['qpm'].iloc[0]
+        
+        #the ratio between the time in second when the note is played and the measure relative timing
+        time_ratio = (4 * 60)/(duration_ratio * df_group['qpm'].iloc[0])
+        
+        #the adding of the time column using the onset column as base
+        df_group = df_group.assign(onset_seconds=df_group['onset'].values)
+        df_group['onset_seconds'] += -i
+        df_group['onset_seconds'] *= time_ratio
+        df_group['onset_seconds'] += current_minimum_time
+        
+        #the calculation of the time in second when the next measure begins
+        current_minimum_time = current_minimum_time + time_ratio
+        
+        #add the group to the note sequence
+        ret_data = pd.concat([ret_data, df_group])
+        
+    return ret_data

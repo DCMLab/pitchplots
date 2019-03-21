@@ -394,7 +394,7 @@ def tonnetz(
     #intern variables
     length = 0.05 * hex_size * 1.5 * 3 / radius#radius and border length of the hexagons
     center_pos = [0.5, 0.5] # set the center on the center of the map
-    size_text = length * 200 * fontsize # parameter fontsize
+    size_text = length * 150 * fontsize # parameter fontsize
     pos = [0, 0, 0] #x, y, z
     pos_ser = (0, 0, 0) #for serching in the data
     a_center = ['F', 0] # the center that was define (note, sup)
