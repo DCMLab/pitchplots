@@ -27,41 +27,69 @@ class InvalidConvertTableTypeError(StaticError):
     """Exception thrown when vocabulary does not have 12 elements or its elements are not tpc notes"""
     pass
 
-#def line(piece, pitch_type='tpc', measures=None,
-#         vocabulary=['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
-#         xmin=None, xmax=None):
-#    vocabulary = pd.Series(vocabulary)
-#    df = get_df_short(piece, vocabulary=vocabulary, pitch_type=pitch_type, measures=measures)
-#    
-#    fig = plt.figure(figsize=[13, 9])
-#    ax = fig.add_subplot(111, aspect='equal')
-#    
-#    
-#    
-#    for i in range(df.shape[0]):
-#        df.at[i, 'fifth_number'] = get_fifth_nb(df.at[i, 'tpc'], df.at[i, 'acc'])
-#    
-#    
-#    xmin = df['fifth_number'].min() if xmin == None else xmin
-#    xmax = df['fifth_number'].max() if xmax == None else xmax
-#    
-#    print(get_fifth_note(0))
-#    
-#    labels = [get_fifth_note(i) for i in range(xmin, xmax+1)]
-#    
-#    s = pd.Series(df['nb'], index = df['tpc_note'])
-#    s.reindex(labels).fillna(0)
-#    print(s)
+def line(
+    piece,
+    pitch_type='tpc',
+    measures=None,
+    log=False,
+    vocabulary={0:'C', 1:'Db', 2:'D', 3:'Eb', 4:'E', 5:'F', 6:'Gb', 7:'G', 8:'Ab', 9:'A', 10:'Bb', 11:'B'},
+    pitch_class_display=False,
+    duration=False, #TODO
+    fifths=True, #TODO
+    color='blue',
+    figsize=[14, 9],
+    xmin=None,
+    xmax=None,
+    display=True,
+    **kwargs):
+    """return the figure of a linechart with the notes in the X axis and their value in the Y axis
+
+    Keyword arguments:
+    piece -- the absolute path to the .csv file containing the data or a DataFrame
+    pitch_type -- the type of data that you want to be read (default 'tpc'), 'pc' could be use for twelve parts chart tpc form
+        (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
+    measures -- give a set of measures example [5, 18], will display the notes of the measures 5 to 18 included
+    log -- if True the colors are distributed on a log scale, by default it's a lineare scale (default False)
+    vocabulary -- the conversion dictionary from pitch class to tpc(F#, A, ...) format,
+    pitch_class_display -- if True display the pitch class and no the tpc values and so the grid repeat itself.
+    duration -- tell him if he has to class the notes by their total duration or their number of appearance
+    fifths -- if True class the notes by fifths order, if not class by the chromatic order
+    figsize -- tell the size of the figure in inches [x, y]
+    xmin, xmax -- the notes that will be displayed are in this range according to this values
+        {0 : F, 1 : C, 2 : G, 3 : D, 4 : A, 5 : E, 6 : B} and +- 7 for a sharp and a flat
+    display -- if True the figure is displayed, if False it is hidden so you can have only the returned figure
+    **kwargs -- these arguments are redirected to the matplotlib.pyplot.pie function, see informations at
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.bar.html
+    """
+    #get the df
+    df = get_df_short(piece, vocabulary=vocabulary, pitch_type=pitch_type, measures=measures)
     
+    #create the figure and close it so it wont be display
+    fig = plt.figure(figsize=figsize)
+    if not display:
+        plt.close(fig)
+    ax = fig.add_subplot(111)
     
+    if not pitch_class_display:
+        df['fifth_number'] = df['tpc'].apply(get_fifth_nb)
+        xmin = df['fifth_number'].min() if xmin == None else xmin
+        xmax = df['fifth_number'].max() if xmax == None else xmax
+        labels = [get_fifth_note(i) for i in range(xmin, xmax+1)]
+    # Give the value to the notes, for their number of appearance
+    s = pd.Series(df['nb'])
+    s.index = df['pc'] if pitch_class_display else df['tpc']
+    if pitch_class_display:
+        #reindex with integers to be compatible with the 'pc' value
+        s = s.reindex([0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5]).fillna(0)
+        #get the index in strings so it wont be reorder by the bar function
+        s.index = ['0', '7', '2', '9', '4', '11', '6', '1', '8', '3', '10', '5']
+    else:
+        s = s.reindex(labels).fillna(0)
+    # Do the bar plot
+    ax.bar(x=s.index, color=color, height = s.values, log=log, **kwargs)
     
+    return fig
     
-#    get_fifth_nb(df_data.at[i, 'tpc'], df_data.at[i, 'acc'])
-    
-#    ax.pie(labels=s_twelve_ones.index, x=s_twelve_ones, colors=color_note, startangle=rotation)
-    
-    
-###FROM PIE_CHART TO CIRCLE
 def circle(
     piece,
     pitch_type='tpc',
@@ -78,6 +106,7 @@ def circle(
     clockwise=True,
     cmap='Blues',
     nan_color=None,
+    display=False,
     **kwargs):
     """return the figure of a piechart with importance of the notes that are represented by the colour as a heatmap
 
@@ -98,10 +127,10 @@ def circle(
     clockwise -- if True the piechart is displayed clockwise if not counter-clockwise
     cmap -- indicate the type of color to use for the heatmap, see matplotlib color documentation (default 'Blues')
     nan_color -- give the possibility to set a color for the note that do not appear in the piece (default 'nan')
+    display -- if True the figure is displayed, if False it is hidden so you can have only the returned figure
     **kwargs -- these arguments are redirected to the matplotlib.pyplot.pie function, see informations at
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.pie.html
     """
-                
     #settings
     df = get_df_short(piece, vocabulary=vocabulary, pitch_type=pitch_type, measures=measures, duration=duration)
 
@@ -125,10 +154,12 @@ def circle(
     part = 0
     letter = 'nan'
     s_fifth = pd.Series()
-
+    
     fig = plt.figure(figsize=figsize)
+    if not display:
+        plt.close(fig)
     ax = fig.add_subplot(111, aspect='equal')
-
+    
     #Set the order in function of fifth
     if fifths:
         s_tpc_format = pd.Series((0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5))
@@ -143,11 +174,9 @@ def circle(
         #put the right values in 'number'
         if duration:
             df_data = df.copy()
-            del df_data['nb']
             df_data.rename(columns={'duration': 'number'},inplace=True)
         else:
             df_data = df.copy()
-            del df_data['duration']
             df_data.rename(columns={'nb': 'number'},inplace=True)
 
         #Normalize the values for the colors
@@ -324,14 +353,12 @@ def circle(
                 if top == (s_twelve_ones.index)[i]:
                     rotation = rotation + 75 - i * 30
                     break
-
         ax.pie(labels=s_twelve_ones.index, x=s_twelve_ones, colors=color_note, startangle=rotation, **kwargs)
 
         #if asked plot the colorbar left of the piechart
         if colorbar:
             ax2 = fig.add_subplot(1, 10, 1)
             cb1 = matplotlib.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm, orientation='vertical')
-        
     return fig
 
 #=====================================================================================================
@@ -356,6 +383,7 @@ def tonnetz(
     nan_color=None,
     edgecolor=None,
     center=None,
+    display=False,
     **kwargs):
     """return the figure of a 2D grid of hexagons, each hexagons being a note
 
@@ -378,6 +406,7 @@ def tonnetz(
     nan_color -- give the possibility to set a color for the note that do not appear in the piece (default None)
     center -- you can set the note that will be in the center of the grid,
         by default it put the most recurent note in the center (default None)
+    display -- if True the figure is displayed, if False it is hidden so you can have only the returned figure
     **kwargs -- these arguments are redirected to matplotlib.patches.RegularPolygon, see informations at
                 https://matplotlib.org/api/_as_gen/matplotlib.patches.RegularPolygon.html
     """
@@ -418,6 +447,8 @@ def tonnetz(
 
     #define figure
     fig = plt.figure(figsize=figsize)
+    if not display:
+        plt.close(fig)
     ax = fig.add_subplot(111, aspect='equal')
     
     
@@ -647,7 +678,7 @@ def tonnetz(
 
                     show_hex = True
 
-                    #if no duplicate then check if the note is already displaye
+                    #if no duplicate then check if the note is already display
                     if duplicate == False:
                         for l in range(df_pos.shape[0] - 1):
                             if pitch_class_display:
