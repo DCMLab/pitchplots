@@ -167,12 +167,12 @@ you can also save it as a gif by specifying `filename='animation.gif'`. By defau
 
 see the following files for more informations about the functions parser, line, circle, tonnetz, circle_animation and tonnetz_animation.
 
-[parser documentation](notebook/parser_doc.ipynb)
-[line documentation](notebook/line_doc.ipynb)
-[circle documentation](notebook/circle_doc.ipynb)
-[tonnetz documentation](notebook/tonnetz_doc.ipynb)
-[circle animation documentation](notebook/circle_anim_doc.ipynb)
-[tonnetz animation documentation](notebook/tonnetz_anim_doc.ipynb)
+[parser documentation](notebooks/parser_doc.ipynb)
+[line documentation](notebooks/line_doc.ipynb)
+[circle documentation](notebooks/circle_doc.ipynb)
+[tonnetz documentation](notebooks/tonnetz_doc.ipynb)
+[circle animation documentation](notebooks/circle_anim_doc.ipynb)
+[tonnetz animation documentation](notebooks/tonnetz_anim_doc.ipynb)
 
 ## Further Information
 ### Authors
