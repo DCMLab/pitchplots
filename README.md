@@ -161,18 +161,18 @@ ppd.circle_animation('csv/data_example.csv', measures=[1, 4])
 
 you can also save it as a gif by specifying `filename='animation.gif'`. By default it produces a `.mp4` file. The result should look like the video below.
 
-![tonnetz_animation](images/animated_tonnetz_example.mp4) ![circle_animation](images/animated_circle_example.mp4)
+![tonnetz_animation](images/animated_tonnetz_example.gif) ![circle_animation](images/animated_circle_example.gif)
 
 ## detailed functionality
 
 see the following files for more informations about the functions parser, line, circle, tonnetz, circle_animation and tonnetz_animation.
 
-[parser documentation](parser_doc.ipynb)
-[line documentation](line_doc.ipynb)
-[circle documentation](circle_doc.ipynb)
-[tonnetz documentation](tonnetz_doc.ipynb)
-[circle animation documentation](circle_anim_doc.ipynb)
-[tonnetz animation documentation](tonnetz_anim_doc.ipynb)
+[parser documentation](notebook/parser_doc.ipynb)
+[line documentation](notebook/line_doc.ipynb)
+[circle documentation](notebook/circle_doc.ipynb)
+[tonnetz documentation](notebook/tonnetz_doc.ipynb)
+[circle animation documentation](notebook/circle_anim_doc.ipynb)
+[tonnetz animation documentation](notebook/tonnetz_anim_doc.ipynb)
 
 ## Further Information
 ### Authors
