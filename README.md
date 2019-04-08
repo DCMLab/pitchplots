@@ -10,8 +10,9 @@ The library contains the following files
 * `functions.py`, 
 * `reader.py`, 
 * `modified_music_xml.py`, 
-* `parser.py`, and 
-* `static.py`
+* `parser.py`
+* `static.py`, and
+* `dynamic.py`
 
 ### Prerequisites
 
@@ -40,10 +41,16 @@ pip install pitchplots
 ![1](images/Tp1_def_hex.png)  ![2](images/Tp2_hex_orange_pc_5.png)  ![2](images/Tp3_hex_noduplicate.png)
 ![4](images/Tp4_def_pie.png)  ![5](images/Tp5_red_pie_nofifith.png)  ![6](images/Tp6_log_pie.png)
 
-**Pitchplots** has currently two plotting functions
+**Pitchplots** has currently three plotting functions
 -   `tonnetz` uses a `.csv` file or a pandas DataFrame of a piece of music to do a hexagonal 2D representation ("Tonnetz").
 -   `circle` uses a csv file or a pandas DataFrame of a piece of music to represent the notes by fifth or chromatic.
-and one function to parse (compressed) MusicXML files
+-   `line` uses a csv file or a pandas DataFrame of a piece of music to represent the notes by fifth or chromatic on a line, the unrolled equivalent to the circle function.
+
+Two animation functions
+-   `tonnetz_animation` plot the same graphs as the `tonnetz` function but is animated.
+-   `circle_animation` plot the same graphs as the `circle` function but is animated.
+
+and one function to parse (compressed) MusicXML files and uncompressed xml files
 -   `xml_to_csv` uses a `.mxl` or `.xml` file and parses it into a `.csv` file using the [TensorFlow Magenta](https://github.com/tensorflow/magenta) `musicxml_parser.py`.
 
 ## Working with files
@@ -82,6 +89,24 @@ In both cases the output should look like the following image (of course, the no
 
 ![tonnetz_example](images/Tp1_def_hex.png)
 
+Or if you want to plot a line:
+
+```python
+import pitchplots.static as pps
+
+pps.line(df_data_example)
+```
+ or a CSV file:
+```python
+import pitchplots.static as pps
+
+pps.line('csv/data_example.csv')
+```
+
+In both cases the output should look like the following image (of course, the note distribution depends on the piece you are plotting):
+
+![line_example](images/line_example.png)
+
 Or if you want to plot a circle:
 
 ```python
@@ -95,9 +120,10 @@ import pitchplots.static as pps
 
 pps.circle('csv/data_example.csv')
 ```
+
 In both cases the output should look like the following image (of course, the note distribution depends on the piece you are plotting):
 
-![circle_example](images/Tp4_def_pie.png)
+![circle_example](images/circle_example.png)
 
 ### Animations
 
@@ -114,19 +140,39 @@ ppd.tonnetz_animation(df_data_example, measures=[1, 4])
 import pitchplots.dynamic as ppd
 
 # the example takes only the measures 1 to 4 because the function can take some time for a long video
-ppd.tonnetz_animation(df_data_example, measures=[1, 4])
+ppd.tonnetz_animation('csv/data_example.csv', measures=[1, 4])
 ```
 
-you can also save it as a gif by specifying `filename='animation.gif'`. By default it produces a `.mp4` file. The result should look like the gif below.
+Or if you want a circle animation:
 
-![tonnetz_animation](images/tonnetz.gif)
+```python
+import pitchplots.dynamic as ppd
+
+# the example takes only the measures 1 to 4 because the function can take some time for a long video
+ppd.circle_animation(df_data_example, measures=[1, 4])
+```
+ or a CSV file:
+```python
+import pitchplots.dynamic as ppd
+
+# the example takes only the measures 1 to 4 because the function can take some time for a long video
+ppd.circle_animation('csv/data_example.csv', measures=[1, 4])
+```
+
+you can also save it as a gif by specifying `filename='animation.gif'`. By default it produces a `.mp4` file. The result should look like the video below.
+
+![tonnetz_animation](images/animated_tonnetz_example.mp4) ![circle_animation](images/animated_circle_example.mp4)
 
 ## detailed functionality
 
-see the following files for more informations about the functions circle and tonnetz.
+see the following files for more informations about the functions parser, line, circle, tonnetz, circle_animation and tonnetz_animation.
 
+[parser documentation](parser_doc.ipynb)
+[line documentation](line_doc.ipynb)
 [circle documentation](circle_doc.ipynb)
 [tonnetz documentation](tonnetz_doc.ipynb)
+[circle animation documentation](circle_anim_doc.ipynb)
+[tonnetz animation documentation](tonnetz_anim_doc.ipynb)
 
 ## Further Information
 ### Authors
