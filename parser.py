@@ -17,7 +17,7 @@ class ParseError(Exception):
     pass
 
 ### DEFINE PARSER
-def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\data\\'+'data_example.mxl',
+def xml_to_csv(filepath=os.path.dirname(os.path.realpath(__file__))+'\\'+'data'+'\\'+'data_example.mxl',
                filename=None, save_csv=True, duration='whole_note'):
     """return the Dataframe, and possbily register it in csv, of the musicxml file
     
@@ -206,7 +206,7 @@ def data_onset_duration_corrector(data, duration):
     ret_data = pd.DataFrame()
     
     for i in range(corr_data['measure_no'].max()):
-        df_group = gb_mesure_no.get_group(i+1)
+        df_group = gb_mesure_no.get_group(i+1).copy()
         
         #assume that the onset_ratio is the same for the last and before last measure
         if i != corr_data['measure_no'].max() - 1:
@@ -224,6 +224,7 @@ def data_onset_duration_corrector(data, duration):
         #the time signature is the same for the whole measure
         duration_ratio = df_group['time_sign_den'].iloc[0]/df_group['time_sign_num'].iloc[0]
         
+        # if True change the duration to be in seconds using the BPM value
         if duration =='seconds':
             #so the duration is equal to the number of seconds of the quatized note
             df_group['duration'] *= (4*60)/df_group['qpm'].iloc[0]
