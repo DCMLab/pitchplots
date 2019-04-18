@@ -20,6 +20,9 @@ In order to use **pitchplots** you need a running Python 3 environment and the f
 * matplotlib
 * pandas
 * numpy
+* librosa
+* moviepy
+* pyknon
 
 If you are using the Anaconda distribution, these libraries are already installed.
 
