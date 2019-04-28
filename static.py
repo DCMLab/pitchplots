@@ -4,6 +4,7 @@ Functions for none moving charts
 import math
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib
@@ -32,15 +33,16 @@ def line(
     pitch_type='tpc',
     measures=None,
     log=False,
+    normalize=False,
     vocabulary={0:'C', 1:'Db', 2:'D', 3:'Eb', 4:'E', 5:'F', 6:'Gb', 7:'G', 8:'Ab', 9:'A', 10:'Bb', 11:'B'},
     pitch_class_display=False,
-    duration=False, #TODO
-    fifths=True, #TODO
+    duration=False,
     color='blue',
-    figsize=[14, 9],
+    figsize=[6, 4],
     xmin=None,
     xmax=None,
-    display=True,
+    start=0,
+    show=False,
     **kwargs):
     """return the figure of a linechart with the notes in the X axis and their value in the Y axis
 
@@ -53,7 +55,6 @@ def line(
     vocabulary -- the conversion dictionary from pitch class to tpc(F#, A, ...) format,
     pitch_class_display -- if True display the pitch class and no the tpc values and so the grid repeat itself.
     duration -- tell him if he has to class the notes by their total duration or their number of appearance
-    fifths -- if True class the notes by fifths order, if not class by the chromatic order
     figsize -- tell the size of the figure in inches [x, y]
     xmin, xmax -- the notes that will be displayed are in this range according to this values
         {0 : F, 1 : C, 2 : G, 3 : D, 4 : A, 5 : E, 6 : B} and +- 7 for a sharp and a flat
@@ -62,27 +63,35 @@ def line(
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.bar.html
     """
     #get the df
-    df = get_df_short(piece, vocabulary=vocabulary, pitch_type=pitch_type, measures=measures)
-    
+    if pitch_class_display:
+        df = get_df_short(piece, vocabulary=vocabulary, pitch_type='pc', measures=measures)
+    else:
+        df = get_df_short(piece, vocabulary=vocabulary, pitch_type=pitch_type, measures=measures)
     #create the figure and close it so it wont be display
     fig = plt.figure(figsize=figsize)
-    if not display:
+    if not show:
         plt.close(fig)
     ax = fig.add_subplot(111)
     
     if not pitch_class_display:
         df['fifth_number'] = df['tpc'].apply(get_fifth_nb)
-        xmin = df['fifth_number'].min() if xmin == None else xmin
-        xmax = df['fifth_number'].max() if xmax == None else xmax
+        xmin = df['fifth_number'].min() if xmin == None else xmin+1
+        xmax = df['fifth_number'].max() if xmax == None else xmax+1
         labels = [get_fifth_note(i) for i in range(xmin, xmax+1)]
     # Give the value to the notes, for their number of appearance
-    s = pd.Series(df['nb'])
+    if normalize:
+        s = pd.Series(df['duration']/df['duration'].sum()) if duration else pd.Series(df['nb']/df['nb'].sum())
+    else:
+        s = pd.Series(df['duration']) if duration else pd.Series(df['nb'])
     s.index = df['pc'] if pitch_class_display else df['tpc']
     if pitch_class_display:
         #reindex with integers to be compatible with the 'pc' value
-        s = s.reindex([0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5]).fillna(0)
+        pc_labels = np.roll([0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5],
+                            -([0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5].index(start)))
+        s = s.reindex(pc_labels).fillna(0)
         #get the index in strings so it wont be reorder by the bar function
-        s.index = ['0', '7', '2', '9', '4', '11', '6', '1', '8', '3', '10', '5']
+        s.index = np.roll(['0', '7', '2', '9', '4', '11', '6', '1', '8', '3', '10', '5'],
+                          -([0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5].index(start)))
     else:
         s = s.reindex(labels).fillna(0)
     # Do the bar plot
@@ -100,13 +109,13 @@ def circle(
     colorbar=True,
     duration=False,
     fifths=True,
-    figsize=[14, 9],
+    figsize=[7, 4],
     top=None,
     rotation=0,
     clockwise=True,
     cmap='Blues',
     nan_color=None,
-    display=False,
+    show=False,
     **kwargs):
     """return the figure of a piechart with importance of the notes that are represented by the colour as a heatmap
 
@@ -156,7 +165,7 @@ def circle(
     s_fifth = pd.Series()
     
     fig = plt.figure(figsize=figsize)
-    if not display:
+    if not show:
         plt.close(fig)
     ax = fig.add_subplot(111, aspect='equal')
     
@@ -361,14 +370,11 @@ def circle(
             cb1 = matplotlib.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm, orientation='vertical')
     return fig
 
-#=====================================================================================================
-#hex
-#=====================================================================================================
-### hexagonal_chart to TONNETZ
+
 def tonnetz(
     piece,
     pitch_type='tpc',
-    measures=None, # need documentation
+    measures=None,
     pitch_class_display=False,
     duplicate=True,
     duration=False,
@@ -378,12 +384,12 @@ def tonnetz(
     radius=3,
     hex_size=1,
     fontsize=1,
-    figsize=[14,9],
+    figsize=[7, 4],
     cmap='Blues',
     nan_color=None,
     edgecolor=None,
     center=None,
-    display=False,
+    show=False, # CHANGE IT TO SHOW
     **kwargs):
     """return the figure of a 2D grid of hexagons, each hexagons being a note
 
@@ -447,7 +453,7 @@ def tonnetz(
 
     #define figure
     fig = plt.figure(figsize=figsize)
-    if not display:
+    if not show:
         plt.close(fig)
     ax = fig.add_subplot(111, aspect='equal')
     
