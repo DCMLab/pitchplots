@@ -3,6 +3,8 @@ module that has to read what is given to the plotting functions
 """
 import pandas as pd
 from pitchplots.functions import get_acc, get_step, get_pc, sampling
+from midiutil import MIDIFile
+import librosa
 
 def get_df_short(
     piece,
@@ -99,7 +101,8 @@ def get_df_long(
         pitch_type='tpc',
         measures=None,
         sampling_frequency=50,
-        speed_ratio=1):
+        speed_ratio=1,
+        midi=False):
     """get the whole columns 
     need a column 'onset_seconds' that is the onset but in seconds
     Keyword arguments:
@@ -117,19 +120,18 @@ def get_df_long(
     else:
         df_data =  pd.read_csv(piece)
     
-    if 'type' in df_data.columns:
-        df_data.drop(df_data[df_data.type == 'rest'].index, inplace=True)
-    
     #the column with the pc values is called pitch_class so it rename it to 'pc'
     if 'pitch_class' in df_data.columns:
         df_data.rename(columns={'pitch_class': 'pc'}, inplace=True)
-        
+    
+    #drop the unwanted measures
     if type(measures) is list:
         df_data.drop(df_data[df_data.measure_no < measures[0]].index, inplace=True)
         df_data.drop(df_data[df_data.measure_no > measures[1]].index, inplace=True)
         df_data.reset_index(drop=True, inplace=True)
         df_data['onset_seconds'] -= df_data['onset_seconds'].min()
-        
+        df_data['onset'] -= df_data['onset'].min()
+    
     if 'tpc' in df_data.columns and pitch_type=='tpc':
         if 'acc' not in df_data.columns:
             df_data['acc'] = df_data['tpc'].apply(get_acc)
@@ -142,9 +144,35 @@ def get_df_long(
             df_data['acc'] = df_data['tpc'].apply(get_acc)
         if 'step' not in df_data.columns:
             df_data['step'] = df_data['tpc'].apply(get_step)
+    
+    #the animation functions do not need the rests
+    if 'type' in df_data.columns:
+        df_data.drop(df_data[df_data.type == 'rest'].index, inplace=True)
             
     df_data.sort_values('onset_seconds', inplace = True)
     df_data['onset_seconds'] *= (1/speed_ratio)
     df_data['onset_seconds'] = df_data['onset_seconds'].apply(sampling, sampling_frequency=sampling_frequency)
     df_data.reset_index(inplace=True)
+    
+    if midi:
+        midi_track    = 0
+        midi_channel  = 0
+        midi_time     = 0    # In beats
+        midi_tempo    = df_data.at[0, 'qpm']*speed_ratio   # In BPM
+        midi_volume   = 100  # 0-127, as per the MIDI standard
+        
+        MyMIDI = MIDIFile(1)  # One track, defaults to format 1 (tempo track is created
+                              # automatically)
+        MyMIDI.addTempo(midi_track, midi_time, midi_tempo)
+        s_onset = pd.Series(data=(df_data['onset']*df_data['time_sign_num']/df_data['time_sign_den'])*4)
+        
+        for i in range(df_data.shape[0]):
+            MyMIDI.addNote(midi_track, midi_channel, int(df_data.at[i, 'pitch']), s_onset[i], df_data.at[i, 'duration']*4, midi_volume)
+            
+        with open("pitchplots_midi.mid", "wb") as output_file:
+            MyMIDI.writeFile(output_file)
+            
+        y, sr = librosa.load('pitchplots_midi.mid')
+        librosa.output.write_wav('pitchplots_sound_only.wav', y, sr)
+
     return df_data

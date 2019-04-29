@@ -2,12 +2,14 @@
 Fonctions for animations
 """
 import math
+import os
 
 import numpy as np
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import moviepy.editor as mpe
 
 from matplotlib import animation
 
@@ -64,7 +66,10 @@ def circle_animation(
     """
     #settings
     df_short = get_df_short(piece, vocabulary=vocabulary, pitch_type=pitch_type, measures=measures, duration=duration)
-    df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio)
+    if '.mp4' in filename:
+        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=True)
+    else:
+        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=False)
 
     #color map
     cmap = matplotlib.cm.get_cmap(cmap)
@@ -403,9 +408,20 @@ def circle_animation(
     anim = animation.FuncAnimation(fig,animate,init_func=init,frames=int((1+df_long['onset_seconds'].max())*sampling_frequency),
                                    interval=1/sampling_frequency,blit=True)
     if '.mp4' in filename:
-        anim.save(filename, writer=writer)
+        anim.save('pitchplots_image_only.mp4', writer=writer)
+        
+        my_clip = mpe.VideoFileClip('pitchplots_image_only.mp4')
+        audio_background = mpe.AudioFileClip('pitchplots_sound_only.wav')
+        my_clip = my_clip.set_audio(audio_background)
+        my_clip.write_videofile(filename)
+        
+        os.remove("pitchplots_midi.mid")
+        os.remove('pitchplots_sound_only.wav')
+        os.remove('pitchplots_image_only.mp4')
     if '.gif' in filename:
         anim.save(filename, writer='imagemagick', fps=sampling_frequency)
+        
+    return anim
 
 #===================================================================================
 #TONNETZ_ANIMATION
@@ -464,7 +480,10 @@ def tonnetz_animation(
                 https://matplotlib.org/api/_as_gen/matplotlib.patches.RegularPolygon.html
     """
     #settings
-    df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio)
+    if '.mp4' in filename:
+        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=True)
+    else:
+        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=False)
     df_short = get_df_short(piece, vocabulary, pitch_type, duration, measures)
     
     #number will be the number of appearances of the note through the video
@@ -613,7 +632,7 @@ def tonnetz_animation(
             a_center[1] = get_acc(center)
                 
             df_pos = df_pos.append(
-                {'pos':(0,0,0), 'note':a_center[0], 'nb':a_center[1]},
+                {'pos':(0,0,0), 'note':a_center[0], 'acc':a_center[1]},
                 ignore_index=True)
        
         #put the sharps and the flats
@@ -896,7 +915,17 @@ def tonnetz_animation(
     
     anim = animation.FuncAnimation(fig,animate,init_func=init,frames=int((1+df_long['onset_seconds'].max())*sampling_frequency),interval=1/sampling_frequency,blit=True)
     if '.mp4' in filename:
-        anim.save(filename, writer=writer)
+        anim.save('pitchplots_image_only.mp4', writer=writer)
+        
+        my_clip = mpe.VideoFileClip('pitchplots_image_only.mp4')
+        audio_background = mpe.AudioFileClip('pitchplots_sound_only.wav')
+        my_clip = my_clip.set_audio(audio_background)
+        my_clip.write_videofile(filename)
+        
+        os.remove("pitchplots_midi.mid")
+        os.remove('pitchplots_sound_only.wav')
+        os.remove('pitchplots_image_only.mp4')
     if '.gif' in filename:
         anim.save(filename, writer='imagemagick', fps=sampling_frequency)
     
+    return anim
