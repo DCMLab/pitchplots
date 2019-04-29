@@ -20,8 +20,28 @@ In order to use **pitchplots** you need a running Python 3 environment and the f
 * matplotlib
 * pandas
 * numpy
+* librosa
+* midiutil
+* moviepy
 
-If you are using the Anaconda distribution, these libraries are already installed.
+to install these libraries, you can do the following command in the prompt:
+
+```
+python3 -m pip install matplotlib==3.0.1 pandas==0.23.4 numpy==1.15.3 librosa==0.6.3 midiutil==1.2.1 moviepy==1.0.0
+```
+
+or if you're using the Anaconda prompt
+
+```
+pip install matplotlib==3.0.1 pandas==0.23.4 numpy==1.15.3 librosa==0.6.3 midiutil==1.2.1 moviepy==1.0.0
+```
+
+Or you can use the requirements.txt file in the github.
+Dont' forget to set the path to the one of the requirements file.
+
+```
+python3 -m pip install -r requirements.txt
+```
 
 ### Installation
 
