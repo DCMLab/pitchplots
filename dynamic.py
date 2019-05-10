@@ -67,7 +67,7 @@ def circle_animation(
     #settings
     df_short = get_df_short(piece, vocabulary=vocabulary, pitch_type=pitch_type, measures=measures, duration=duration)
     if '.mp4' in filename:
-        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=True)
+        df_long, soundtrack = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=True)
     else:
         df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=False)
 
@@ -411,12 +411,12 @@ def circle_animation(
         anim.save('pitchplots_image_only.mp4', writer=writer)
         
         my_clip = mpe.VideoFileClip('pitchplots_image_only.mp4')
-        audio_background = mpe.AudioFileClip('pitchplots_sound_only.wav')
-        my_clip = my_clip.set_audio(audio_background)
+#        audio_background = mpe.AudioFileClip('pitchplots_sound_only.wav')
+        my_clip = my_clip.set_audio(soundtrack)
         my_clip.write_videofile(filename)
         
-        os.remove("pitchplots_midi.mid")
-        os.remove('pitchplots_sound_only.wav')
+#        os.remove("pitchplots_midi.mid")
+#        os.remove('pitchplots_sound_only.wav')
         os.remove('pitchplots_image_only.mp4')
     if '.gif' in filename:
         anim.save(filename, writer='imagemagick', fps=sampling_frequency)
@@ -481,7 +481,7 @@ def tonnetz_animation(
     """
     #settings
     if '.mp4' in filename:
-        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=True)
+        df_long, soundtrack = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=True)
     else:
         df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=False)
     df_short = get_df_short(piece, vocabulary, pitch_type, duration, measures)
@@ -918,12 +918,12 @@ def tonnetz_animation(
         anim.save('pitchplots_image_only.mp4', writer=writer)
         
         my_clip = mpe.VideoFileClip('pitchplots_image_only.mp4')
-        audio_background = mpe.AudioFileClip('pitchplots_sound_only.wav')
-        my_clip = my_clip.set_audio(audio_background)
+        #audio_background = mpe.AudioFileClip('pitchplots_sound_only.wav')
+        my_clip = my_clip.set_audio(soundtrack)
         my_clip.write_videofile(filename)
         
-        os.remove("pitchplots_midi.mid")
-        os.remove('pitchplots_sound_only.wav')
+#        os.remove("pitchplots_midi.mid")
+#        os.remove('pitchplots_sound_only.wav')
         os.remove('pitchplots_image_only.mp4')
     if '.gif' in filename:
         anim.save(filename, writer='imagemagick', fps=sampling_frequency)

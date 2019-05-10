@@ -1,10 +1,15 @@
 """
 module that has to read what is given to the plotting functions
 """
-import pandas as pd
+import os
+
 from pitchplots.functions import get_acc, get_step, get_pc, sampling
-from midiutil import MIDIFile
-import librosa
+
+import pandas as pd
+import moviepy.editor as mpe
+#from midiutil import MIDIFile
+#import librosa
+#import numpy
 
 def get_df_short(
     piece,
@@ -151,28 +156,47 @@ def get_df_long(
             
     df_data.sort_values('onset_seconds', inplace = True)
     df_data['onset_seconds'] *= (1/speed_ratio)
-    df_data['onset_seconds'] = df_data['onset_seconds'].apply(sampling, sampling_frequency=sampling_frequency)
     df_data.reset_index(inplace=True)
     
+    ###AUDIO
     if midi:
-        midi_track    = 0
-        midi_channel  = 0
-        midi_time     = 0    # In beats
-        midi_tempo    = df_data.at[0, 'qpm']*speed_ratio   # In BPM
-        midi_volume   = 100  # 0-127, as per the MIDI standard
-        
-        MyMIDI = MIDIFile(1)  # One track, defaults to format 1 (tempo track is created
-                              # automatically)
-        MyMIDI.addTempo(midi_track, midi_time, midi_tempo)
-        s_onset = pd.Series(data=(df_data['onset']*df_data['time_sign_num']/df_data['time_sign_den'])*4)
-        
+        sound_path = os.path.dirname(os.path.realpath(__file__))+'\\'+'data'+'\\'
+        soundtrack = mpe.AudioFileClip(sound_path+'silence.wav')
         for i in range(df_data.shape[0]):
-            MyMIDI.addNote(midi_track, midi_channel, int(df_data.at[i, 'pitch']), s_onset[i], df_data.at[i, 'duration']*4, midi_volume)
-            
-        with open("pitchplots_midi.mid", "wb") as output_file:
-            MyMIDI.writeFile(output_file)
-            
-        y, sr = librosa.load('pitchplots_midi.mid')
-        librosa.output.write_wav('pitchplots_sound_only.wav', y, sr)
-
-    return df_data
+            print(sound_path+'midi'+str(int(df_data.at[i, 'pitch']))+'.wav')
+            note_sound = mpe.AudioFileClip(sound_path+'midi'+str(int(df_data.at[i, 'pitch']))+'.wav')
+            if df_data.at[i, 'duration']*4*60/df_data.at[i, 'qpm'] < 4:
+                note_sound = note_sound.set_duration(df_data.at[i, 'duration']*4*60/df_data.at[i, 'qpm'])
+            else:
+                note_sound = note_sound.set_duration(4)
+            note_sound = note_sound.set_start(df_data.at[i, 'onset_seconds'])
+            soundtrack = mpe.CompositeAudioClip([soundtrack, note_sound])
+        
+#    soundtrack.write_audiofile("test1.wav", fps=44100)
+    
+    df_data['onset_seconds'] = df_data['onset_seconds'].apply(sampling, sampling_frequency=sampling_frequency)
+    
+#    if midi:
+#        midi_track    = 0
+#        midi_channel  = 0
+#        midi_time     = 0    # In beats
+#        midi_tempo    = df_data.at[0, 'qpm']*speed_ratio   # In BPM
+#        midi_volume   = 100  # 0-127, as per the MIDI standard
+#        
+#        MyMIDI = MIDIFile(1)  # One track, defaults to format 1 (tempo track is created
+#                              # automatically)
+#        MyMIDI.addTempo(midi_track, midi_time, midi_tempo)
+#        s_onset = pd.Series(data=(df_data['onset']*df_data['time_sign_num']/df_data['time_sign_den'])*4)
+#        
+#        for i in range(df_data.shape[0]):
+#            MyMIDI.addNote(midi_track, midi_channel, int(df_data.at[i, 'pitch']), s_onset[i], df_data.at[i, 'duration']*4, midi_volume)
+#            
+#        with open("pitchplots_midi.mid", "wb") as output_file:
+#            MyMIDI.writeFile(output_file)
+#            
+#        y, sr = librosa.load('pitchplots_midi.mid')
+#        librosa.output.write_wav('pitchplots_sound_only.wav', y, sr)
+    if midi:
+        return (df_data, soundtrack)
+    else:
+        return df_data
