@@ -3,6 +3,7 @@
 ![header](images/big_blue_hex_8_top.png)
 
 A python library for plotting note distributions in different tonal spaces.
+This branche have the dynamic module and correspond to the version 1.3.4
 
 ## Getting Started
 
