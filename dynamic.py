@@ -22,15 +22,16 @@ def circle_animation(
     pitch_type='tpc',
     measures=None,
     log=False,
+    audio=True,
     vocabulary={0:'C', 1:'Db', 2:'D', 3:'Eb', 4:'E', 5:'F', 6:'Gb', 7:'G', 8:'Ab', 9:'A', 10:'Bb', 11:'B'},
     pitch_class_display=False,
     colorbar=True,
     adaptive_scale=True,
     duration=False,
-    sampling_frequency=25,
+    sampling_frequency=10,
     speed_ratio=1,
     fifths=True,
-    figsize=[14, 9],
+    figsize=[7, 5],
     top=None,
     rotation=0,
     clockwise=True,
@@ -46,6 +47,7 @@ def circle_animation(
         (tpc:[A, B#, Gbbb, ...], pc (pitch class):[0, 3, 7, ...])
     measures -- give a set of measures example [5, 18], will display the notes of the measures 5 to 18 included
     log -- if True the colors are distributed on a log scale, by default it's a lineare scale (default False)
+    audio -- if True if the filename is an .mp4 add the sound to it
     vocabulary -- the conversion dictionary from pitch class to tpc(F#, A, ...) format,
     pitch_class_display -- if True display the pitch class and no the tpc values and so the grid repeat itself.
     colorbar -- if true display the colorbar aside of the pie chart
@@ -66,10 +68,10 @@ def circle_animation(
     """
     #settings
     df_short = get_df_short(piece, vocabulary=vocabulary, pitch_type=pitch_type, measures=measures, duration=duration)
-    if '.mp4' in filename:
-        df_long, soundtrack = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=True)
+    if '.mp4' in filename and audio:
+        df_long, soundtrack = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, audio=True)
     else:
-        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=False)
+        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, audio=False)
 
     #color map
     cmap = matplotlib.cm.get_cmap(cmap)
@@ -408,16 +410,14 @@ def circle_animation(
     anim = animation.FuncAnimation(fig,animate,init_func=init,frames=int((1+df_long['onset_seconds'].max())*sampling_frequency),
                                    interval=1/sampling_frequency,blit=True)
     if '.mp4' in filename:
-        anim.save('pitchplots_image_only.mp4', writer=writer)
-        
-        my_clip = mpe.VideoFileClip('pitchplots_image_only.mp4')
-#        audio_background = mpe.AudioFileClip('pitchplots_sound_only.wav')
-        my_clip = my_clip.set_audio(soundtrack)
-        my_clip.write_videofile(filename)
-        
-#        os.remove("pitchplots_midi.mid")
-#        os.remove('pitchplots_sound_only.wav')
-        os.remove('pitchplots_image_only.mp4')
+        if audio:
+            anim.save('pitchplots_image_only.mp4', writer=writer)
+            my_clip = mpe.VideoFileClip('pitchplots_image_only.mp4')
+            my_clip = my_clip.set_audio(soundtrack)
+            my_clip.write_videofile(filename)
+            os.remove('pitchplots_image_only.mp4')
+        else:
+            anim.save(filename, writer=writer)
     if '.gif' in filename:
         anim.save(filename, writer='imagemagick', fps=sampling_frequency)
         
@@ -430,19 +430,20 @@ def tonnetz_animation(
     piece,
     pitch_type='tpc',
     measures=None,
-    sampling_frequency=25,
+    sampling_frequency=10,
     speed_ratio=1,
     pitch_class_display=False,
     adaptive_scale=True,
     duplicate=True,
     duration=False,
     log=False,
+    audio=True,
     colorbar=True,
     vocabulary={0:'C', 1:'Db', 2:'D', 3:'Eb', 4:'E', 5:'F', 6:'Gb', 7:'G', 8:'Ab', 9:'A', 10:'Bb', 11:'B'},
     radius=3,
     hex_size=1,
     fontsize=1,
-    figsize=[14,9],
+    figsize=[7,5],
     cmap='Blues',
     nan_color=None,
     center=None,
@@ -464,6 +465,7 @@ def tonnetz_animation(
     duplicate -- if False there wont be any duplicate of note in the chart
     duration -- if True the value taking in account is the total duration of the note, if False it's the number of appearance
     log -- if True the scale is logarithmic if False it's linear
+    audio -- if True if the filename is an .mp4 add the sound to it
     colorbar -- if true display the colorbar in the background
     vocabulary -- the conversion dictionary from pitch class to tpc(F#, A, ...) format,
     radius -- define the number of layers of the hexagonal grid (default 3)
@@ -480,10 +482,10 @@ def tonnetz_animation(
                 https://matplotlib.org/api/_as_gen/matplotlib.patches.RegularPolygon.html
     """
     #settings
-    if '.mp4' in filename:
-        df_long, soundtrack = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=True)
+    if '.mp4' in filename and audio:
+        df_long, soundtrack = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, audio=True)
     else:
-        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, midi=False)
+        df_long = get_df_long(piece, vocabulary, pitch_type, measures, sampling_frequency, speed_ratio, audio=False)
     df_short = get_df_short(piece, vocabulary, pitch_type, duration, measures)
     
     #number will be the number of appearances of the note through the video
@@ -915,16 +917,14 @@ def tonnetz_animation(
     
     anim = animation.FuncAnimation(fig,animate,init_func=init,frames=int((1+df_long['onset_seconds'].max())*sampling_frequency),interval=1/sampling_frequency,blit=True)
     if '.mp4' in filename:
-        anim.save('pitchplots_image_only.mp4', writer=writer)
-        
-        my_clip = mpe.VideoFileClip('pitchplots_image_only.mp4')
-        #audio_background = mpe.AudioFileClip('pitchplots_sound_only.wav')
-        my_clip = my_clip.set_audio(soundtrack)
-        my_clip.write_videofile(filename)
-        
-#        os.remove("pitchplots_midi.mid")
-#        os.remove('pitchplots_sound_only.wav')
-        os.remove('pitchplots_image_only.mp4')
+        if audio:
+            anim.save('pitchplots_image_only.mp4', writer=writer)
+            my_clip = mpe.VideoFileClip('pitchplots_image_only.mp4')
+            my_clip = my_clip.set_audio(soundtrack)
+            my_clip.write_videofile(filename)
+            os.remove('pitchplots_image_only.mp4')
+        else:
+            anim.save(filename, writer=writer)
     if '.gif' in filename:
         anim.save(filename, writer='imagemagick', fps=sampling_frequency)
     

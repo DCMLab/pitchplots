@@ -107,7 +107,7 @@ def get_df_long(
         measures=None,
         sampling_frequency=50,
         speed_ratio=1,
-        midi=False):
+        audio=False):
     """get the whole columns 
     need a column 'onset_seconds' that is the onset but in seconds
     Keyword arguments:
@@ -119,6 +119,7 @@ def get_df_long(
     measures -- give a set of measures example [5, 18], will display the notes of the measures 5 to 18 included
     sampling_frequency -- the frequency of lecture of the piece, also correspond to the fps of the video
     speed_ratio -- set the speed at which the video is read, for example : 2 accelerate the speed of the video by 2
+    audio -- if True render the soundtrack for the animation
     """ 
     if isinstance(piece, pd.DataFrame):
         df_data = piece.copy()
@@ -159,18 +160,20 @@ def get_df_long(
     df_data.reset_index(inplace=True)
     
     ###AUDIO
-    if midi:
+    if audio:
         sound_path = os.path.dirname(os.path.realpath(__file__))+'\\'+'data'+'\\'
         soundtrack = mpe.AudioFileClip(sound_path+'silence.wav')
+        print('Rendering the soundtrack')
         for i in range(df_data.shape[0]):
-            print(sound_path+'midi'+str(int(df_data.at[i, 'pitch']))+'.wav')
             note_sound = mpe.AudioFileClip(sound_path+'midi'+str(int(df_data.at[i, 'pitch']))+'.wav')
+            #NOTE TO EXPLAIN THAT
             if df_data.at[i, 'duration']*4*60/df_data.at[i, 'qpm'] < 4:
                 note_sound = note_sound.set_duration(df_data.at[i, 'duration']*4*60/df_data.at[i, 'qpm'])
             else:
                 note_sound = note_sound.set_duration(4)
             note_sound = note_sound.set_start(df_data.at[i, 'onset_seconds'])
             soundtrack = mpe.CompositeAudioClip([soundtrack, note_sound])
+        print('The soundtrack is done')
         
 #    soundtrack.write_audiofile("test1.wav", fps=44100)
     
@@ -196,7 +199,7 @@ def get_df_long(
 #            
 #        y, sr = librosa.load('pitchplots_midi.mid')
 #        librosa.output.write_wav('pitchplots_sound_only.wav', y, sr)
-    if midi:
+    if audio:
         return (df_data, soundtrack)
     else:
         return df_data
