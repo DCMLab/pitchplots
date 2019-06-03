@@ -11,8 +11,7 @@ The library contains the following files
 * `reader.py`, 
 * `modified_music_xml.py`, 
 * `parser.py`
-* `static.py`, and
-* `dynamic.py`
+* `static.py`
 
 ### Prerequisites
 
@@ -20,18 +19,17 @@ In order to use **pitchplots** you need a running Python 3 environment and the f
 * matplotlib
 * pandas
 * numpy
-* moviepy
 
 to install these libraries, you can do the following command in the prompt:
 
 ```
-python3 -m pip install matplotlib>=3.0.1 pandas>=0.23.4 numpy>=1.15.3 moviepy>=1.0.0
+python3 -m pip install matplotlib>=3.0.1 pandas>=0.23.4 numpy>=1.15.3
 ```
 
 or if you're using the Anaconda prompt
 
 ```
-pip install matplotlib>=3.0.1 pandas>=0.23.4 numpy>=1.15.3 moviepy>=1.0.0
+pip install matplotlib>=3.0.1 pandas>=0.23.4 numpy>=1.15.3
 ```
 
 Or you can use the requirements.txt file in the github.
@@ -143,44 +141,6 @@ In both cases the output should look like the following image (of course, the no
 
 ![circle_example](images/circle_example.png)
 
-### Animations
-
-In order to create an animated plot of a piece, import the `pitchplots.dynamic` module and use its plotting function. It takes as input the output of the parser, i.e. either a DataFrame object:
-
-```python
-import pitchplots.dynamic as ppd
-
-# the example takes only the measures 1 to 4 because the function can take some time for a long video
-ppd.tonnetz_animation(df_data_example, measures=[1, 4])
-```
- or a CSV file:
-```python
-import pitchplots.dynamic as ppd
-
-# the example takes only the measures 1 to 4 because the function can take some time for a long video
-ppd.tonnetz_animation('csv/data_example.csv', measures=[1, 4])
-```
-
-Or if you want a circle animation:
-
-```python
-import pitchplots.dynamic as ppd
-
-# the example takes only the measures 1 to 4 because the function can take some time for a long video
-ppd.circle_animation(df_data_example, measures=[1, 4])
-```
- or a CSV file:
-```python
-import pitchplots.dynamic as ppd
-
-# the example takes only the measures 1 to 4 because the function can take some time for a long video
-ppd.circle_animation('csv/data_example.csv', measures=[1, 4])
-```
-
-you can also save it as a gif by specifying `filename='animation.gif'`. By default it produces a `.mp4` file. The result should look like the video below.
-
-![tonnetz_animation](images/animated_tonnetz_example.gif) ![circle_animation](images/animated_circle_example.gif)
-
 ## detailed functionality
 
 see the following files for more informations about the functions parser, line, circle, tonnetz, circle_animation and tonnetz_animation.
@@ -189,8 +149,6 @@ see the following files for more informations about the functions parser, line, 
 [line documentation](notebooks/line_doc.ipynb)
 [circle documentation](notebooks/circle_doc.ipynb)
 [tonnetz documentation](notebooks/tonnetz_doc.ipynb)
-[circle animation documentation](notebooks/circle_anim_doc.ipynb)
-[tonnetz animation documentation](notebooks/tonnetz_anim_doc.ipynb)
 
 ## Further Information
 ### Authors
