@@ -447,7 +447,7 @@ def tonnetz(
     if log:
         norm = matplotlib.colors.LogNorm(vmin=min_val_tpc, vmax=max_val_tpc)
     else:
-        norm = matplotlib.colors.Normalize(vmin=min_val_tpc, vmax=max_val_tpc)
+        norm = matplotlib.colors.Normalize(vmin=0, vmax=max_val_tpc)
 
     found = False
 
