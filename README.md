@@ -2,7 +2,7 @@
 
 ![header](images/big_blue_hex_8_top.png)
 
-A python library for plotting note distributions in different tonal spaces.
+A python library for plotting note distributions in different tonal spaces. [![DOI](https://zenodo.org/badge/145848867.svg)](https://zenodo.org/badge/latestdoi/145848867)
 
 ## Getting Started
 
@@ -154,6 +154,13 @@ see the following files for more informations about the functions parser, line, 
 ### Authors
 * [**Fabian C. Moss**](https://github.com/fabianmoss)
 * [**Timothy Loayza**](https://github.com/TimothyLoayza)
+* Martin Rohrmeier
+
+If you use *pitchplots* in academic publications, please cite the library as 
+
+```
+Moss, Fabian C.; Loayza, Timothy & Rohrmeier Martin. (2019). pitchplots (Version 1.4.2). Zenodo. http://doi.org/10.5281/zenodo.3265393
+```
 
 ### Usage of Magenta's code
 
